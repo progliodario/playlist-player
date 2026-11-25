@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dev-dist/
+*.tsbuildinfo
+
+# Generated at build time by `npm run catalog` (see docs/DATA-SOURCES.md)
+public/catalog/
+
+# Android build output and local files
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/*.iml
+android/app/*.iml
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Local env / secrets
+.env
+.env.*
+!.env.example
+
+# Editors and OS
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+
+# Tool caches
+.eslintcache
+coverage/
+
+# Claude Code local settings
+.claude/settings.local.json

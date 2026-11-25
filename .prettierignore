@@ -1,0 +1,7 @@
+dist/
+dev-dist/
+coverage/
+node_modules/
+public/catalog/
+android/
+package-lock.json

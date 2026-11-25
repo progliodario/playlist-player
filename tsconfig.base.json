@@ -1,0 +1,27 @@
+{
+  // Shared compiler options. Keep these strict: the type checker is the main safety net
+  // for humans and AI agents editing this codebase.
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    // Only syntax that Node's built-in type stripping understands (no enums, no namespaces,
+    // no parameter properties). Needed because scripts/ import files from src/domain/.
+    "erasableSyntaxOnly": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": false,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true
+  }
+}

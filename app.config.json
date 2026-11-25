@@ -1,0 +1,23 @@
+{
+  "appName": "Playlist Player",
+  "shortName": "Playlist",
+  "description": "Le playlist YouTube di Dario, video e canzoni, in un'unica app.",
+  "themeColor": "#12101c",
+  "basePath": "/playlist-player/",
+  "publicUrl": "https://progliodario.github.io/playlist-player/",
+  "repositoryUrl": "https://github.com/progliodario/playlist-player",
+  "youtube": {
+    "channelHandle": "@DarioProglio",
+    "extraPlaylistIds": [],
+    "excludedPlaylistIds": [],
+    "kindOverrides": {}
+  },
+  "google": {
+    "oauthClientId": ""
+  },
+  "android": {
+    "applicationId": "io.github.progliodario.playlistplayer",
+    "versionCode": 1,
+    "versionName": "1.0.0"
+  }
+}

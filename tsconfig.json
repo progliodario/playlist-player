@@ -1,0 +1,7 @@
+{
+  // Solution file for editors. The real settings live in:
+  //  - tsconfig.app.json  -> browser code in src/
+  //  - tsconfig.node.json -> Node code: scripts/ and vite.config.ts
+  "files": [],
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
+}
