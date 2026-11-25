@@ -1,0 +1,6 @@
+// Versions are pinned on purpose. When upgrading the Android Gradle Plugin, also check
+// the Gradle version in .github/workflows/android.yml (compatibility table:
+// https://developer.android.com/build/releases/gradle-plugin#updating-gradle).
+plugins {
+    id 'com.android.application' version '8.13.2' apply false
+}
