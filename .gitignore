@@ -43,3 +43,6 @@ coverage/
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Local copy of the Android signing key (secrets live in GitHub)
+.signing/
