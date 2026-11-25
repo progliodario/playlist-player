@@ -1,0 +1,367 @@
+/* Reusable components: thumbnails, cards, track rows, segmented control, dialog... */
+
+/* --- Thumbnail ------------------------------------------------------------------------ */
+
+.thumb {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-m);
+  background: var(--surface-3);
+}
+
+.thumb--square {
+  aspect-ratio: 1;
+}
+
+.thumb--wide {
+  aspect-ratio: 16 / 9;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* hqdefault.jpg is 4:3 with black bands around 16:9 videos: zoom them out of view. */
+.thumb--zoom img {
+  transform: scale(1.34);
+}
+
+.thumb__placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--text-faint);
+  background: linear-gradient(135deg, var(--surface-2), var(--surface-3));
+}
+
+/* --- Segmented control -------------------------------------------------------------- */
+
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+}
+
+.segmented__option {
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.87rem;
+  font-weight: 600;
+}
+
+.segmented__option.is-active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+}
+
+/* --- Playlist grid & card ------------------------------------------------------------ */
+
+.playlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-5) var(--space-4);
+}
+
+@media (max-width: 420px) {
+  .playlist-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.playlist-card {
+  position: relative;
+  min-width: 0;
+}
+
+.playlist-card__link {
+  display: block;
+  color: var(--text);
+}
+
+.playlist-card__link:hover {
+  text-decoration: none;
+}
+
+.playlist-card__cover {
+  box-shadow: var(--shadow);
+  transition: transform 0.15s;
+}
+
+.playlist-card__link:hover .playlist-card__cover {
+  transform: translateY(-2px);
+}
+
+.playlist-card.is-current .playlist-card__cover {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.playlist-card__title {
+  margin-top: var(--space-2);
+  overflow: hidden;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.playlist-card__meta {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.playlist-card__overlay {
+  position: absolute;
+  inset: 0 0 auto 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  aspect-ratio: 1;
+  padding: var(--space-2);
+  pointer-events: none;
+}
+
+.playlist-card__play {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+  pointer-events: auto;
+}
+
+.playlist-card:hover .playlist-card__play,
+.playlist-card:focus-within .playlist-card__play {
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: none) {
+  .playlist-card__play {
+    width: 40px;
+    height: 40px;
+    opacity: 0.95;
+    transform: none;
+  }
+}
+
+.playlist-card--skeleton .thumb {
+  box-shadow: none;
+}
+
+/* --- Track list ----------------------------------------------------------------------- */
+
+.track-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.track-row__button {
+  display: grid;
+  grid-template-columns: 32px auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-s);
+  background: transparent;
+  text-align: left;
+}
+
+.track-list--compact .track-row__button {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.track-row__button:hover {
+  background: var(--surface-2);
+}
+
+.track-row.is-current .track-row__button {
+  background: var(--accent-soft);
+}
+
+.track-row.is-current .track-row__title {
+  color: var(--accent-strong);
+}
+
+.track-row.is-unplayable {
+  opacity: 0.55;
+}
+
+.track-row__index {
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.track-row__thumb {
+  width: 44px;
+  border-radius: var(--radius-s);
+}
+
+.track-row__thumb.thumb--wide {
+  width: 88px;
+}
+
+.track-row__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.track-row__title,
+.track-row__subtitle {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.track-row__title {
+  font-weight: 600;
+}
+
+.track-row__subtitle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.track-row__duration {
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Animated "now playing" bars. */
+.eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+
+.eq i {
+  width: 3px;
+  height: 100%;
+  border-radius: 1px;
+  background: var(--accent-strong);
+  animation: eq 0.9s ease-in-out infinite;
+}
+
+.eq i:nth-child(2) {
+  animation-delay: -0.3s;
+}
+
+.eq i:nth-child(3) {
+  animation-delay: -0.6s;
+}
+
+@keyframes eq {
+  0%,
+  100% {
+    height: 30%;
+  }
+  50% {
+    height: 100%;
+  }
+}
+
+/* --- Status messages, hints ------------------------------------------------------------ */
+
+.status-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-4);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.status-message--error {
+  color: var(--danger);
+}
+
+.hint-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  padding: var(--space-4);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-m);
+  color: var(--text-muted);
+}
+
+.hint-card p {
+  flex: 1 1 220px;
+}
+
+.section-hint {
+  margin-bottom: var(--space-3);
+}
+
+.notice {
+  padding: var(--space-3);
+  border-radius: var(--radius-s);
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+
+.form-error {
+  color: var(--danger);
+  font-size: 0.9rem;
+}
+
+/* --- Dialog ------------------------------------------------------------------------------ */
+
+.dialog {
+  width: min(92vw, 480px);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.dialog::backdrop {
+  background: var(--overlay);
+  backdrop-filter: blur(2px);
+}
+
+.dialog__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+}
+
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}

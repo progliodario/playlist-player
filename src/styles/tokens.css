@@ -1,0 +1,68 @@
+/*
+ * Design tokens. Change colors, spacing and radii HERE, not in component styles.
+ * Dark is the default; <html data-theme="light"> switches to the light palette
+ * (set by useThemeEffect in src/app/effects.ts).
+ */
+:root {
+  color-scheme: dark;
+
+  --bg: #12101c;
+  --surface: #1a1726;
+  --surface-2: #221e31;
+  --surface-3: #2d283f;
+  --border: #322d45;
+  --text: #f3f1f9;
+  --text-muted: #a8a2b9;
+  --text-faint: #6f6984;
+  --accent: #9479ff;
+  --accent-strong: #b39fff;
+  --accent-soft: rgb(148 121 255 / 0.16);
+  --accent-contrast: #ffffff;
+  --danger: #ff7a85;
+  --success: #4fd1a5;
+  --brand-gradient: linear-gradient(135deg, #8b6cff 0%, #ff5c8a 100%);
+  --shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+  --overlay: rgb(8 6 14 / 0.6);
+
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-size: 15px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --radius-s: 8px;
+  --radius-m: 12px;
+  --radius-l: 18px;
+  --radius-pill: 999px;
+
+  --sidebar-width: 232px;
+  --panel-width: 400px;
+  --content-max: 1200px;
+  --touch: 44px;
+
+  --z-toast: 50;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #f6f5fb;
+  --surface: #ffffff;
+  --surface-2: #f0eef7;
+  --surface-3: #e4e0ef;
+  --border: #e2deec;
+  --text: #17141f;
+  --text-muted: #5a546a;
+  --text-faint: #8d879c;
+  --accent: #6a4cf0;
+  --accent-strong: #5534e0;
+  --accent-soft: rgb(106 76 240 / 0.12);
+  --danger: #d6334a;
+  --success: #138a63;
+  --shadow: 0 10px 30px rgb(30 20 60 / 0.12);
+  --overlay: rgb(20 16 30 / 0.45);
+}

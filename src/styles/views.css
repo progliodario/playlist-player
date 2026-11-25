@@ -1,0 +1,224 @@
+/* Page-level styles: library, playlist page, now playing page, settings. */
+
+.view {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-4) var(--space-6);
+}
+
+@media (min-width: 1024px) {
+  .view {
+    padding: var(--space-6) var(--space-6) var(--space-6);
+  }
+}
+
+.view__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.view__title {
+  margin-bottom: var(--space-5);
+}
+
+/* --- Library ---------------------------------------------------------------------------- */
+
+.library__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.library__toolbar .search-field {
+  flex: 1 1 220px;
+}
+
+@media (max-width: 640px) {
+  .library__toolbar {
+    width: 100%;
+  }
+
+  .library__toolbar .search-field {
+    flex-basis: 100%;
+  }
+}
+
+.library-section {
+  margin-bottom: var(--space-6);
+}
+
+.library-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.library-section__count {
+  margin-left: var(--space-2);
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  vertical-align: middle;
+}
+
+/* --- Playlist page ------------------------------------------------------------------------ */
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.playlist-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.playlist-hero__cover {
+  width: min(60vw, 240px);
+  justify-self: center;
+  box-shadow: var(--shadow);
+}
+
+.playlist-hero__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.playlist-hero__kind {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--accent-strong);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.playlist-hero__title {
+  overflow-wrap: anywhere;
+}
+
+.playlist-hero__description {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--text-muted);
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.playlist-hero__meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.playlist-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.playlist-hero__kind-choice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  font-size: 0.87rem;
+}
+
+@media (min-width: 720px) {
+  .playlist-hero {
+    grid-template-columns: 220px minmax(0, 1fr);
+    align-items: end;
+  }
+
+  .playlist-hero__cover {
+    width: 220px;
+  }
+}
+
+.playlist-view__search {
+  margin-bottom: var(--space-3);
+}
+
+/* --- Now playing page ---------------------------------------------------------------------- */
+
+.now-playing-view__controls {
+  margin-bottom: var(--space-5);
+}
+
+/* --- Settings ------------------------------------------------------------------------------- */
+
+.settings {
+  max-width: 760px;
+}
+
+.settings-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+}
+
+.settings-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+}
+
+.settings-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.account-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.account-status img {
+  border-radius: 50%;
+}
+
+.advanced summary {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.inline-form {
+  display: flex;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+}
