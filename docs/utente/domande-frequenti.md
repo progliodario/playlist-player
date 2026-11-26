@@ -33,10 +33,17 @@ La playlist deve essere **pubblica**. Per quelle private serve l'accesso con Goo
 
 ## Come vedo le playlist private e i video che mi piacciono?
 
-Serve l'accesso con Google: **Impostazioni** → **Accedi con Google** (una volta sola; poi al massimo
-un clic su "Riconnetti" quando la sessione scade, dopo un'ora). L'accesso è in sola lettura.
-Se il pulsante non c'è, l'accesso non è ancora stato attivato da chi gestisce l'app
-(configurazione descritta in [../sviluppo/account-google.md](../sviluppo/account-google.md)).
+Serve l'accesso con Google: **Libreria** o **Impostazioni** → **Accedi con Google** (una volta sola;
+poi al massimo un clic su "Riconnetti" quando la sessione scade, dopo un'ora). L'accesso è in sola
+lettura: l'app può solo leggere le tue playlist, non modificarle.
+
+La prima volta Google mostra **"Google non ha verificato questa app"**: è normale per un'app
+personale come questa. Premi **Continua**, scegli il canale se ne hai più di uno e consenti la
+lettura dell'account YouTube.
+
+Possono accedere solo gli account aggiunti come "utenti di test" da chi gestisce l'app; con un
+altro account compare `access_denied` (come aggiungerne uno:
+[../sviluppo/account-google.md](../sviluppo/account-google.md)).
 
 ## Non trovo una playlist salvata da un altro canale
 

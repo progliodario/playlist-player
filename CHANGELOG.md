@@ -5,6 +5,11 @@ Tutte le modifiche rilevanti, dalla più recente. Formato ispirato a
 
 ## [Non rilasciato]
 
+### Aggiunto
+
+- Accesso con Google attivo: "Accedi con Google" in Libreria e Impostazioni mostra le playlist
+  private, non in elenco e i video piaciuti del tuo account (sola lettura).
+
 ## [1.1.1] — 2026-11-26
 
 ### Corretto

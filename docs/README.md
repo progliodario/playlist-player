@@ -23,7 +23,7 @@ Prima di tutto leggi [AGENTS.md](../AGENTS.md) nella radice del progetto.
 | [grafica.md](sviluppo/grafica.md)                   | Tema "Notturno"/"Alba", token, illustrazioni, regole di stile |
 | [accessibilita.md](sviluppo/accessibilita.md)       | Regole di accessibilità del codice e verifica manuale         |
 | [regole-youtube.md](sviluppo/regole-youtube.md)     | Vincoli imposti da YouTube (da non rimuovere)                 |
-| [account-google.md](sviluppo/account-google.md)     | Attivare l'accesso con Google (configurazione una tantum)     |
+| [account-google.md](sviluppo/account-google.md)     | Accesso con Google: configurazione attuale e come rifarla     |
 | [deploy-e-rilasci.md](sviluppo/deploy-e-rilasci.md) | GitHub Actions, GitHub Pages, versioni e Release              |
 | [android.md](sviluppo/android.md)                   | App Android (Trusted Web Activity), firma, APK                |
 

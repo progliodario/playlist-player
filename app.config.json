@@ -13,7 +13,7 @@
     "kindOverrides": {}
   },
   "google": {
-    "oauthClientId": ""
+    "oauthClientId": "232957256698-0rh9b4l2jiehlcct8til24ngjd4b7ol0.apps.googleusercontent.com"
   },
   "android": {
     "applicationId": "io.github.progliodario.playlistplayer",

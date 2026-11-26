@@ -7,6 +7,28 @@ pubbliche del canale funzionano senza.
 
 Tempo: ~10 minuti. Costo: gratis.
 
+## Stato attuale (già fatto)
+
+L'accesso è **attivo** dalla versione 1.2.0. Configurazione esistente:
+
+| Cosa                  | Valore                                                                |
+| --------------------- | --------------------------------------------------------------------- |
+| Progetto Google Cloud | `Playlist Player` (ID `playlist-player-515912`), senza organizzazione |
+| API abilitata         | YouTube Data API v3                                                   |
+| Schermata di consenso | Pubblico **Esterno**, stato **Test**, ambito `youtube.readonly`       |
+| Utenti di test        | l'account Google del proprietario del canale                          |
+| Client OAuth          | "Playlist Player web" (applicazione web), ID in `app.config.json`     |
+| Origini autorizzate   | `https://progliodario.github.io`, `http://localhost:5173`             |
+
+Cose che potresti voler fare:
+
+- **Far accedere un altro account** (in modalità Test entrano solo gli utenti di test, max 100):
+  <https://console.cloud.google.com/auth/audience?project=playlist-player-515912> → _Utenti di
+  prova_ → **Add users**.
+- **Cambiare l'URL dell'app**: aggiungi la nuova origine al client in
+  <https://console.cloud.google.com/auth/clients?project=playlist-player-515912>.
+- **Rifare tutto da zero** (altro account o altro progetto): segui i passi qui sotto.
+
 ## 1. Progetto e API
 
 1. Apri <https://console.cloud.google.com/projectcreate> con l'account Google del canale →

@@ -25,7 +25,7 @@ Dettagli: [docs/utente/installazione.md](docs/utente/installazione.md).
   dove eri rimasto, scorciatoie da tastiera, "Apri in YouTube Music".
 - **Aggiungi qualsiasi playlist pubblica** con il suo link (anche YouTube Music).
 - **Account Google (facoltativo)**: playlist private e video piaciuti, con un clic su "Accedi con
-  Google" una volta attivato ([docs/sviluppo/account-google.md](docs/sviluppo/account-google.md)).
+  Google" ([configurazione](docs/sviluppo/account-google.md)).
 - **Accessibile** (WCAG 2.2 AA): tastiera, lettori di schermo, contrasti verificati, movimento
   ridotto, contrasto elevato — [dichiarazione](docs/utente/accessibilita.md).
 - Temi **Notturno** e **Alba**, italiano e inglese, installabile e utilizzabile offline (PWA).
