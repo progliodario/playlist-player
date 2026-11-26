@@ -60,7 +60,14 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: gradle -p android assembleRelease --no-daemon --stacktrace
+        # Up to 3 attempts: dependency downloads can fail with temporary HTTP 429 errors.
+        run: |
+          for attempt in 1 2; do
+            if gradle -p android assembleRelease --no-daemon; then exit 0; fi
+            echo "::warning::Gradle attempt $attempt failed, retrying in $((attempt * 60))s"
+            sleep $((attempt * 60))
+          done
+          gradle -p android assembleRelease --no-daemon --stacktrace
 
       - name: Rename APK
         run: cp android/app/build/outputs/apk/release/app-release.apk "playlist-player-${{ steps.version.outputs.name }}.apk"
