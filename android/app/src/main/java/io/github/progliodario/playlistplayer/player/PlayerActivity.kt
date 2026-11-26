@@ -8,7 +8,6 @@ import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionCommand
@@ -154,7 +153,7 @@ class PlayerActivity : ComponentActivity() {
         videoChoice = null
         player.sendCustomCommand(
             SessionCommand(PlaybackService.COMMAND_HANDOFF, Bundle.EMPTY),
-            bundleOf(PlaybackService.ARG_PAYLOAD to payload),
+            Bundle().apply { putString(PlaybackService.ARG_PAYLOAD, payload) },
         )
     }
 
@@ -163,7 +162,7 @@ class PlayerActivity : ComponentActivity() {
         ui.videoOn = on
         controller?.sendCustomCommand(
             SessionCommand(PlaybackService.COMMAND_SET_VIDEO, Bundle.EMPTY),
-            bundleOf(PlaybackService.ARG_ON to on),
+            Bundle().apply { putBoolean(PlaybackService.ARG_ON, on) },
         )
     }
 

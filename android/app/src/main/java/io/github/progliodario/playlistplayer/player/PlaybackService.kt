@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.OptIn
-import androidx.core.os.bundleOf
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -163,11 +162,11 @@ class PlaybackService : MediaSessionService() {
                     .setAlbumTitle(playlistTitle)
                     .setArtworkUri(Uri.parse("https://i.ytimg.com/vi/${track.videoId}/hqdefault.jpg"))
                     .setExtras(
-                        bundleOf(
-                            EXTRA_SHOWS_VIDEO to video,
-                            EXTRA_PLAYLIST_IS_VIDEO to playlistIsVideo,
-                            EXTRA_DURATION_SECONDS to (track.durationSeconds ?: -1L),
-                        ),
+                        Bundle().apply {
+                            putBoolean(EXTRA_SHOWS_VIDEO, video)
+                            putBoolean(EXTRA_PLAYLIST_IS_VIDEO, playlistIsVideo)
+                            putLong(EXTRA_DURATION_SECONDS, track.durationSeconds ?: -1L)
+                        },
                     )
                     .build(),
             )
@@ -311,15 +310,17 @@ class PlaybackService : MediaSessionService() {
             session: MediaSession,
             controller: MediaSession.ControllerInfo,
         ): MediaSession.ConnectionResult {
-            val commands = MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.buildUpon()
+            // Default commands for this kind of controller (system UI, Bluetooth, this app...).
+            val result = MediaSession.ConnectionResult.AcceptedResultBuilder(session, controller)
             // Only this app may hand off queues or switch the picture on and off.
             if (controller.packageName == packageName) {
-                commands.add(SessionCommand(COMMAND_HANDOFF, Bundle.EMPTY))
-                commands.add(SessionCommand(COMMAND_SET_VIDEO, Bundle.EMPTY))
+                val commands = MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.buildUpon()
+                    .add(SessionCommand(COMMAND_HANDOFF, Bundle.EMPTY))
+                    .add(SessionCommand(COMMAND_SET_VIDEO, Bundle.EMPTY))
+                    .build()
+                result.setAvailableSessionCommands(commands)
             }
-            return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
-                .setAvailableSessionCommands(commands.build())
-                .build()
+            return result.build()
         }
 
         override fun onCustomCommand(

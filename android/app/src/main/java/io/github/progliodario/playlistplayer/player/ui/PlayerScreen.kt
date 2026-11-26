@@ -37,9 +37,11 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -318,9 +320,12 @@ private fun SeekBar(ui: PlayerUiState, actions: PlayerActions) {
     val durationText = formatTime(duration)
     val label = stringResource(R.string.player_seek)
     val state = stringResource(R.string.player_seek_value, positionText, durationText)
+    val sliderState = rememberSliderState()
+    // The slider shows the playback position, or the drag position while the user drags it.
+    SideEffect { sliderState.value = fraction }
     Column(Modifier.fillMaxWidth()) {
         Slider(
-            value = fraction,
+            state = sliderState,
             onValueChange = { dragging = it },
             onValueChangeFinished = {
                 dragging?.let { actions.seekTo((it * duration).toLong()) }
