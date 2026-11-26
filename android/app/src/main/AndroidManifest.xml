@@ -26,6 +26,7 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
+        android:manageSpaceActivity="com.google.androidbrowserhelper.trusted.ManageDataLauncherActivity"
         android:supportsRtl="true"
         android:theme="@style/Theme.Launcher">
 
@@ -104,6 +105,18 @@
                 <action android:name="androidx.media3.session.MediaSessionService" />
             </intent-filter>
         </service>
+
+        <!--
+          REQUIRED: at every launch LauncherActivity adds a "Site settings" shortcut that opens
+          this activity (data and permissions of the site in Chrome). Without this declaration
+          Android rejects the shortcut and the app crashes at launch ("keeps stopping").
+          Also opened by "Manage space" in the system settings (manageSpaceActivity above).
+        -->
+        <activity android:name="com.google.androidbrowserhelper.trusted.ManageDataLauncherActivity">
+            <meta-data
+                android:name="android.support.customtabs.trusted.MANAGE_SPACE_URL"
+                android:value="${launchUrl}" />
+        </activity>
 
         <activity android:name="com.google.androidbrowserhelper.trusted.FocusActivity" />
 
