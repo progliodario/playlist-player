@@ -18,6 +18,9 @@ Esecuzione manuale: tab **Actions** → scegli il workflow → **Run workflow**.
 
 ### Il controllo ogni 15 minuti in dettaglio
 
+0. Orario: ai minuti 7, 22, 37 e 52 di ogni ora (non `*/15`: GitHub scarta molte esecuzioni
+   programmate ai minuti 0/15/30/45, i più affollati). GitHub può comunque ritardarle o saltarle
+   nei momenti di carico; chi ha fatto l'accesso con Google vede le proprie playlist subito.
 1. `npm run catalog -- --fallback-to-published` rilegge le playlist con yt-dlp.
 2. `node scripts/catalog-changed.ts` confronta il `contentHash` con quello online e scrive
    `changed=true|false`.
@@ -57,5 +60,6 @@ Il client OAuth Google non è un segreto e sta in `app.config.json`.
 
 Dependabot (`.github/dependabot.yml`) apre PR mensili. Unisci solo se la CI è verde (per
 `android/` anche il workflow Android, per `desktop/` il workflow Windows). Per le librerie Android
-controlla la nota sulle versioni in `android/app/build.gradle` (compileSdk 36 / AGP 8). Gli aggiornamenti major esclusi sono motivati in
+se fallisce `checkReleaseAarMetadata` la libreria chiede un compileSdk o un AGP più recente
+(decisione 0010). Gli aggiornamenti major esclusi sono motivati in
 [../decisioni/](../decisioni/README.md).

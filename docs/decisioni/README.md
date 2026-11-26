@@ -15,7 +15,7 @@ riga in questa tabella.
 | 0007 | [TypeScript 6.0 invece di 7](0007-typescript-6.md)                                                            | 2026-11-25 |
 | 0008 | [Script in TypeScript eseguiti direttamente da Node](0008-script-typescript-con-node.md)                      | 2026-11-25 |
 | 0009 | [Android Gradle senza wrapper](0009-gradle-senza-wrapper.md)                                                  | 2026-11-25 |
-| 0010 | [Android Gradle Plugin 8.x fissato](0010-agp-8.md)                                                            | 2026-11-26 |
+| 0010 | [Android Gradle Plugin fissato (ora 9.x)](0010-agp-8.md)                                                      | 2026-11-26 |
 | 0011 | [Niente blocco delle pubblicità né riproduzione in background](0011-niente-blocco-pubblicita-e-background.md) | 2026-11-26 |
 | 0012 | [Catalogo controllato ogni 15 minuti, deploy solo se cambia](0012-catalogo-ogni-15-minuti.md)                 | 2026-11-26 |
 | 0013 | [Tema artistico "Notturno" con illustrazioni SVG nel codice](0013-tema-notturno-e-arte-svg.md)                | 2026-11-26 |

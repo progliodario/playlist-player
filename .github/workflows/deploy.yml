@@ -6,7 +6,8 @@
 #  - every 15 minutes (schedule)   -> re-reads the channel playlists and deploys ONLY if
 #                                     something changed (new/removed/renamed playlist,
 #                                     tracks added, removed or reordered)
-# So a change made on YouTube shows up in the app within ~15-20 minutes.
+# So a change made on YouTube shows up in the app within ~15-20 minutes (GitHub may still
+# delay or skip scheduled runs when it is busy; signed-in users see their playlists live).
 # Details: docs/sviluppo/deploy-e-rilasci.md
 name: Deploy to GitHub Pages
 
@@ -14,7 +15,9 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '*/15 * * * *'
+    # Every 15 minutes, at minutes 7/22/37/52: GitHub drops many scheduled runs that fall on
+    # :00/:15/:30/:45 (its busiest moments), so "*/15" ran about once in 13 hours.
+    - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
 
 concurrency:

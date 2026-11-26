@@ -36,25 +36,24 @@ Lato pagina, dentro l'app il pannello del lettore mostra "Apri il lettore" invec
 
 ## File
 
-| File                                                       | Contenuto                                                                  |
-| ---------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `android/app/build.gradle`                                 | Identità da `app.config.json`, dipendenze (versioni compatibili con AGP 8) |
-| `android/app/src/main/AndroidManifest.xml`                 | Launcher TWA, link verificati, `PlayerActivity`, `PlaybackService`         |
-| `android/app/src/main/java/.../player/Handoff.kt`          | Formato della coda (uguale a `src/domain/handoff-payload.ts`)              |
-| `android/app/src/main/java/.../player/PlaybackService.kt`  | Lettore: coda, video sì/no, errori, salvataggio                            |
-| `android/app/src/main/java/.../player/StreamResolver.kt`   | NewPipeExtractor: URL dell'audio e manifest HLS, con cache                 |
-| `android/app/src/main/java/.../player/PlayerActivity.kt`   | Schermata: riceve la coda dalla pagina, comanda il servizio                |
-| `android/app/src/main/java/.../player/ui/PlayerScreen.kt`  | Interfaccia Compose (accessibile, tema "Notturno")                         |
-| `android/app/src/main/res/values*/strings.xml`             | Testi del lettore nativo (italiano, inglese)                               |
-| `android/app/src/test/.../HandoffJsonTest.kt`              | Test del formato della coda (in CI)                                        |
-| `android/app/src/main/res/mipmap-*`, `drawable/splash.png` | Icone generate da `npm run icons`                                          |
-| `android/build.gradle`                                     | Versioni di Android Gradle Plugin e Kotlin                                 |
-| `.github/workflows/android.yml`                            | Test, build in CI e pubblicazione della Release                            |
+| File                                                       | Contenuto                                                          |
+| ---------------------------------------------------------- | ------------------------------------------------------------------ |
+| `android/app/build.gradle`                                 | Identità da `app.config.json`, dipendenze                          |
+| `android/app/src/main/AndroidManifest.xml`                 | Launcher TWA, link verificati, `PlayerActivity`, `PlaybackService` |
+| `android/app/src/main/java/.../player/Handoff.kt`          | Formato della coda (uguale a `src/domain/handoff-payload.ts`)      |
+| `android/app/src/main/java/.../player/PlaybackService.kt`  | Lettore: coda, video sì/no, errori, salvataggio                    |
+| `android/app/src/main/java/.../player/StreamResolver.kt`   | NewPipeExtractor: URL dell'audio e manifest HLS, con cache         |
+| `android/app/src/main/java/.../player/PlayerActivity.kt`   | Schermata: riceve la coda dalla pagina, comanda il servizio        |
+| `android/app/src/main/java/.../player/ui/PlayerScreen.kt`  | Interfaccia Compose (accessibile, tema "Notturno")                 |
+| `android/app/src/main/res/values*/strings.xml`             | Testi del lettore nativo (italiano, inglese)                       |
+| `android/app/src/test/.../HandoffJsonTest.kt`              | Test del formato della coda (in CI)                                |
+| `android/app/src/main/res/mipmap-*`, `drawable/splash.png` | Icone generate da `npm run icons`                                  |
+| `android/build.gradle`                                     | Versioni di Android Gradle Plugin e Kotlin                         |
+| `.github/workflows/android.yml`                            | Test, build in CI e pubblicazione della Release                    |
 
-Versioni: Android Gradle Plugin 8.13.2, Kotlin 2.4.21, Gradle 8.14.3, JDK 17, compileSdk/targetSdk
-36, minSdk 24 (Android 7.0 o successivo). Media3 1.11.1, Compose BOM 2026.06.01 (Compose 1.11), OkHttp 5.4.0,
-NewPipeExtractor v0.27.1. Le librerie AndroidX più nuove (androidx.core 1.19+, Compose 1.12+, OkHttp 5.5+)
-richiedono compileSdk 37 e AGP 9: aggiornale insieme ([decisione 0010](../decisioni/0010-agp-8.md)).
+Versioni: Android Gradle Plugin 9.5.3 (con Kotlin integrato), Kotlin 2.4.21, Gradle 9.9.2, JDK 17,
+compileSdk 37.1, targetSdk 36, minSdk 24 (Android 7.0 o successivo). Media3 1.11.1, Compose BOM
+2026.11.01, OkHttp 5.5.1, NewPipeExtractor v0.27.1 ([decisione 0010](../decisioni/0010-agp-8.md)).
 
 **Licenza**: NewPipeExtractor è GPL-3.0, quindi l'APK e la cartella `android/` sono distribuiti con
 licenza GPL-3.0-or-later (`android/LICENSE`). Il resto del repository è MIT.
