@@ -3,14 +3,18 @@
 #  - push of a tag "vX.Y.Z" -> builds and publishes a GitHub Release with the APK
 #    (the tag must match android.versionName in app.config.json)
 #  - "Run workflow" from the Actions tab -> builds the APK as a downloadable artifact
+#  - pull request touching android/ -> checks that the APK still builds (e.g. Dependabot)
 #
 # Signing key: GitHub secrets ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD,
-# ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD. Without them a throwaway debug key is used.
+# ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD. Without them a throwaway debug key is used
+# (always the case for pull requests, which cannot read the secrets).
 name: Android APK
 
 on:
   push:
     tags: ['v*']
+  pull_request:
+    paths: ['android/**', 'app.config.json', '.github/workflows/android.yml']
   workflow_dispatch:
 
 permissions:

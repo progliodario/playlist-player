@@ -67,3 +67,11 @@ Aggiungi una voce quando prendi una decisione che un futuro manutentore potrebbe
 - **Decisione**: nessun `gradlew`/`gradle-wrapper.jar` nel repository; la CI usa
   `gradle/actions/setup-gradle` con una versione fissata.
 - **Perché**: evita file binari nel repository. Android Studio genera il wrapper se serve in locale.
+
+## D10 — Android Gradle Plugin 8.x fissato
+
+- **Contesto** (novembre 2026): esiste AGP 9, che richiede Gradle 9 e cambia parte del DSL.
+- **Decisione**: AGP 8.13.2 + Gradle 8.14.3, versioni verificate in CI. Dependabot ignora i
+  major dell'AGP e di `@types/node` (che deve seguire la versione di Node in `.nvmrc`).
+- **Per aggiornare**: cambia insieme `android/build.gradle` e `gradle-version` in
+  `.github/workflows/android.yml`, apri una PR e controlla che il workflow "Android APK" passi.
