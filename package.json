@@ -19,8 +19,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm run test",
+    "check:all": "npm run check && npm --prefix desktop run check",
     "catalog": "node scripts/build-catalog.ts",
-    "icons": "node scripts/generate-icons.ts"
+    "icons": "node scripts/generate-icons.ts",
+    "desktop:install": "npm --prefix desktop ci",
+    "desktop:start": "npm --prefix desktop start",
+    "desktop:check": "npm --prefix desktop run check",
+    "desktop:dist": "npm --prefix desktop run dist"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "^5.3.0",

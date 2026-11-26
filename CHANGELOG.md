@@ -5,6 +5,18 @@ Tutte le modifiche rilevanti, dalla più recente. Formato ispirato a
 
 ## [Non rilasciato]
 
+### Corretto
+
+- Il controllo automatico delle playlist del canale parte più spesso: GitHub scartava quasi tutte
+  le esecuzioni programmate ai minuti 0/15/30/45, ora girano ai minuti 7/22/37/52.
+
+### Manutenzione
+
+- App Android compilata con Android Gradle Plugin 9.5 e SDK 37.1: si possono di nuovo aggiornare
+  le librerie (Compose, OkHttp). Nessun cambiamento visibile.
+- Documentazione: nuova guida "Stato e prossimi passi", controllo automatico dei link,
+  comandi `npm run check:all` e `npm run desktop:*` dalla radice.
+
 ## [1.3.0] — 2026-11-26
 
 ### Aggiunto

@@ -42,6 +42,6 @@ updates:
       interval: monthly
     ignore:
       # A new Android Gradle Plugin major also needs a new Gradle version in
-      # .github/workflows/android.yml and possibly build script changes (docs/decisioni/0010-agp-8.md).
+      # .github/workflows/android.yml and possibly build script changes (docs/decisioni/0010-versione-agp.md).
       - dependency-name: com.android.application
         update-types: [version-update:semver-major]

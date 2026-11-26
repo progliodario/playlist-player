@@ -13,21 +13,23 @@ Tre cartelle, una per pubblico. Ogni file è autonomo e inizia con un riassunto.
 
 ## `sviluppo/` — per chi modifica il codice (persone e agenti AI)
 
-Prima di tutto leggi [AGENTS.md](../AGENTS.md) nella radice del progetto.
+Prima di tutto leggi [AGENTS.md](../AGENTS.md) nella radice del progetto, poi
+[stato-e-prossimi-passi.md](sviluppo/stato-e-prossimi-passi.md) per sapere da dove riprendere.
 
-| File                                                | Contenuto                                                     |
-| --------------------------------------------------- | ------------------------------------------------------------- |
-| [architettura.md](sviluppo/architettura.md)         | Strati del codice, stato, flusso dei dati, layout, PWA        |
-| [sorgenti-dati.md](sviluppo/sorgenti-dati.md)       | Da dove arrivano le playlist; catalogo e suo aggiornamento    |
-| [lettore.md](sviluppo/lettore.md)                   | Come funziona la riproduzione (coda, eventi YouTube, errori)  |
-| [grafica.md](sviluppo/grafica.md)                   | Tema "Notturno"/"Alba", token, illustrazioni, regole di stile |
-| [accessibilita.md](sviluppo/accessibilita.md)       | Regole di accessibilità del codice e verifica manuale         |
-| [app-native.md](sviluppo/app-native.md)             | Browser, app Android, app Windows: chi suona e dove           |
-| [regole-youtube.md](sviluppo/regole-youtube.md)     | Regole di YouTube, cosa rispetta l'app e rischi accettati     |
-| [account-google.md](sviluppo/account-google.md)     | Accesso con Google: configurazione attuale e come rifarla     |
-| [deploy-e-rilasci.md](sviluppo/deploy-e-rilasci.md) | GitHub Actions, GitHub Pages, versioni e Release              |
-| [android.md](sviluppo/android.md)                   | App Android: TWA + lettore nativo, firma, APK                 |
-| [app-windows.md](sviluppo/app-windows.md)           | App Windows (Electron): lettore, yt-dlp, installer            |
+| File                                                            | Contenuto                                                     |
+| --------------------------------------------------------------- | ------------------------------------------------------------- |
+| [stato-e-prossimi-passi.md](sviluppo/stato-e-prossimi-passi.md) | Cosa funziona, cosa manca, manutenzione, idee                 |
+| [architettura.md](sviluppo/architettura.md)                     | Strati del codice, stato, flusso dei dati, layout, PWA        |
+| [sorgenti-dati.md](sviluppo/sorgenti-dati.md)                   | Da dove arrivano le playlist; catalogo e suo aggiornamento    |
+| [lettore.md](sviluppo/lettore.md)                               | Come funziona la riproduzione (coda, eventi YouTube, errori)  |
+| [grafica.md](sviluppo/grafica.md)                               | Tema "Notturno"/"Alba", token, illustrazioni, regole di stile |
+| [accessibilita.md](sviluppo/accessibilita.md)                   | Regole di accessibilità del codice e verifica manuale         |
+| [app-native.md](sviluppo/app-native.md)                         | Browser, app Android, app Windows: chi suona e dove           |
+| [regole-youtube.md](sviluppo/regole-youtube.md)                 | Regole di YouTube, cosa rispetta l'app e rischi accettati     |
+| [account-google.md](sviluppo/account-google.md)                 | Accesso con Google: configurazione attuale e come rifarla     |
+| [deploy-e-rilasci.md](sviluppo/deploy-e-rilasci.md)             | GitHub Actions, GitHub Pages, versioni e Release              |
+| [android.md](sviluppo/android.md)                               | App Android: TWA + lettore nativo, firma, APK                 |
+| [app-windows.md](sviluppo/app-windows.md)                       | App Windows (Electron): lettore, yt-dlp, installer            |
 
 ## `decisioni/` — perché il progetto è fatto così
 

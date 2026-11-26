@@ -53,7 +53,7 @@ Lato pagina, dentro l'app il pannello del lettore mostra "Apri il lettore" invec
 
 Versioni: Android Gradle Plugin 9.5.3 (con Kotlin integrato), Kotlin 2.4.21, Gradle 9.9.2, JDK 17,
 compileSdk 37.1, targetSdk 36, minSdk 24 (Android 7.0 o successivo). Media3 1.11.1, Compose BOM
-2026.11.01, OkHttp 5.5.1, NewPipeExtractor v0.27.1 ([decisione 0010](../decisioni/0010-agp-8.md)).
+2026.11.01, OkHttp 5.5.1, NewPipeExtractor v0.27.1 ([decisione 0010](../decisioni/0010-versione-agp.md)).
 
 **Licenza**: NewPipeExtractor è GPL-3.0, quindi l'APK e la cartella `android/` sono distribuiti con
 licenza GPL-3.0-or-later (`android/LICENSE`). Il resto del repository è MIT.
@@ -81,7 +81,11 @@ L'APK è firmato con una chiave salvata nei **GitHub Secrets** del repository:
 
 Android installa un aggiornamento solo se è firmato con **la stessa chiave**. Se la chiave va
 persa o cambiata: disinstalla l'app dal telefono e installa il nuovo APK (si perdono solo le
-impostazioni locali).
+impostazioni locali), e aggiorna l'impronta in `assetlinks.json` (sezione sotto).
+
+**Copia di sicurezza**: i GitHub Secrets si possono sovrascrivere ma non rileggere. Conserva il file
+`.jks` e le password fuori dal repository (gestore di password o archivio cifrato). Una copia
+locale, mai committata, sta in `.signing/` (in `.gitignore`).
 
 Creare una nuova chiave (solo se serve):
 
@@ -137,4 +141,5 @@ nel repository `progliodario.github.io` (il suo README spiega come). Per ricrear
 ## Build in locale (facoltativa)
 
 Con Android Studio: **Open** → cartella `android/` (Android Studio scarica Gradle e l'SDK).
-Da riga di comando, con Gradle 8.14 e Android SDK installati: `gradle -p android assembleDebug`.
+Da riga di comando, con JDK 17-21, Gradle 9.6 o successivo e Android SDK (piattaforma 37.1):
+`gradle -p android testDebugUnitTest assembleDebug`. Non serve per pubblicare: lo fa la CI.

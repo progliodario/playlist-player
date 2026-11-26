@@ -14,3 +14,7 @@ Un'unica web app React installabile come PWA (Windows con Edge/Chrome), pubblica
 ## Conseguenze
 
 Un solo codice; aggiornamenti immediati su tutti i dispositivi; nessuno store. Su Android serve Chrome.
+
+Aggiunte successive, sempre attorno allo stesso sito: un lettore nativo nell'APK e un'app Windows
+in Electron con l'accesso Google nel browser di sistema (decisione 0015,
+[../sviluppo/app-native.md](../sviluppo/app-native.md)).

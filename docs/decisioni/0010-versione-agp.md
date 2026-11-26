@@ -22,4 +22,4 @@ Android 17. Build script con la sintassi di assegnazione (`minSdk = 24`), valida
 - Per aggiornare l'AGP cambia insieme `android/build.gradle` e `gradle-version` in
   `.github/workflows/android.yml`, in una PR (il workflow Android gira sulle PR).
 - Dependabot ignora solo i major dell'AGP (il prossimo sarà la 10).
-- Il nome del file resta `0010-agp-8.md` perché altri documenti lo collegano.
+- Il nome del file resta `0010-versione-agp.md` perché altri documenti lo collegano.

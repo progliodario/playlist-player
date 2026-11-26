@@ -2,7 +2,8 @@
 
 Punto di partenza per **sviluppatori e agenti AI** (Claude, Copilot, Codex…). Leggilo tutto prima
 di cambiare il codice: mappa del progetto, comandi, regole da non rompere, ricette.
-Indice completo della documentazione: [docs/README.md](docs/README.md).
+Indice completo della documentazione: [docs/README.md](docs/README.md). Cosa è verificato, cosa
+manca e la manutenzione: [docs/sviluppo/stato-e-prossimi-passi.md](docs/sviluppo/stato-e-prossimi-passi.md).
 
 ## In una frase
 
@@ -25,8 +26,9 @@ YouTube, nelle app con un lettore proprio senza pubblicità che suona in backgro
 | `npm run catalog` | Genera `public/catalog/` dal canale (serve `yt-dlp`)                                  |
 | `npm run icons`   | Rigenera icone web e Android da `scripts/generate-icons.ts`                           |
 
-App Windows: dentro `desktop/` `npm install`, `npm start` (apre l'app), `npm run check`, `npm run dist`
-(installer). App Android: nessun build locale necessario, lo fa la CI (`.github/workflows/android.yml`).
+App Windows dalla radice: `npm run desktop:install`, `desktop:start` (apre l'app), `desktop:check`,
+`desktop:dist` (installer). Tutto insieme: `npm run check:all`. App Android: nessun build locale
+necessario, lo fa la CI (`.github/workflows/android.yml`).
 
 `yt-dlp`: `pipx install yt-dlp` (o `pip install yt-dlp`); se non è nel PATH usa la variabile
 `YT_DLP` (es. `YT_DLP="python -m yt_dlp"`). Senza catalogo l'app funziona: la sezione del canale

@@ -6,7 +6,7 @@ dist/
 dev-dist/
 *.tsbuildinfo
 
-# Generated at build time by `npm run catalog` (see docs/DATA-SOURCES.md)
+# Generated at build time by `npm run catalog` (see docs/sviluppo/sorgenti-dati.md)
 public/catalog/
 
 # Android build output and local files
