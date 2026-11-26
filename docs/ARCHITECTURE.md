@@ -61,6 +61,10 @@ tutta la coda ad ogni tick.
    - errore (video rimosso, incorporamento vietato…) → video segnato come non riproducibile,
      salto automatico dopo 1,2 s; dopo 5 errori di fila si ferma.
 5. Mentre suona, un timer aggiorna `usePlayerClock` e salva la posizione.
+   - `status` è ciò che YouTube ha comunicato; `playIntent` è ciò che l'utente vuole (play/pausa).
+     Il pulsante play/pausa e il titolo della finestra seguono `playIntent`, perché **durante le
+     pubblicità YouTube non invia eventi di stato**: basandosi solo su `status` il pulsante
+     resterebbe bloccato.
 6. Al riavvio: la coda viene ripristinata, il player mostra la miniatura; premendo play il video
    riparte dal punto salvato.
 

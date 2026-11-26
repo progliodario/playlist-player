@@ -34,7 +34,13 @@ export interface PlayerError {
 
 interface PlayerState {
   queue: Queue.QueueState | null;
+  /** What the YouTube player last reported (it reports nothing while an ad plays). */
   status: PlaybackStatus;
+  /**
+   * What the user wants: true = play, false = pause. The play/pause button follows this,
+   * not `status`, so it keeps working during YouTube ads (which send no state events).
+   */
+  playIntent: boolean;
   volume: number;
   muted: boolean;
   /** Preferred repeat mode, applied to new queues. */
@@ -71,6 +77,7 @@ export const usePlayerStore = create<PlayerState>()(
     (set, get) => ({
       queue: null,
       status: 'idle',
+      playIntent: false,
       volume: 100,
       muted: false,
       repeat: 'off',
@@ -96,10 +103,14 @@ export const usePlayerStore = create<PlayerState>()(
       },
 
       togglePlay() {
-        const { status, queue, loadedVideoId } = get();
+        const { status, queue, loadedVideoId, playIntent } = get();
         if (!queue) return;
-        if (status === 'playing' || status === 'buffering' || status === 'loading') {
+        if (playIntent && status !== 'ended') {
+          // Optimistic: during ads YouTube does not confirm with a PAUSED event.
           playerEngine.pause();
+          stopClock();
+          saveResumeTime(true);
+          set({ playIntent: false, status: 'paused' });
           return;
         }
         const track = Queue.currentTrack(queue);
@@ -110,6 +121,8 @@ export const usePlayerStore = create<PlayerState>()(
           loadCurrent(true, readResumeTime());
         } else {
           playerEngine.play();
+          // "buffering" until YouTube confirms PLAYING (never confirmed during an ad).
+          set({ playIntent: true, status: 'buffering' });
         }
       },
 
@@ -180,7 +193,13 @@ export const usePlayerStore = create<PlayerState>()(
         stopClock();
         safeStorage.remove(STORAGE_KEYS.playerResumeTime);
         usePlayerClock.setState({ currentTime: 0, duration: 0 });
-        set({ queue: null, status: 'idle', loadedVideoId: null, lastError: null });
+        set({
+          queue: null,
+          status: 'idle',
+          playIntent: false,
+          loadedVideoId: null,
+          lastError: null,
+        });
       },
 
       dismissError() {
@@ -218,12 +237,14 @@ function loadCurrent(autoplay: boolean, startSeconds: number) {
   if (!track) return;
   usePlayerStore.setState({
     status: autoplay ? 'loading' : 'paused',
+    playIntent: autoplay,
     loadedVideoId: track.videoId,
   });
   usePlayerClock.setState({ currentTime: startSeconds, duration: track.durationSeconds ?? 0 });
   playerEngine.load(track.videoId, startSeconds, autoplay).catch(() => {
     usePlayerStore.setState({
       status: 'paused',
+      playIntent: false,
       lastError: { code: -1, videoId: track.videoId, gaveUp: true },
     });
   });
@@ -234,12 +255,12 @@ playerEngine.setListener({
     switch (state) {
       case YT_STATE.PLAYING:
         consecutiveErrors = 0;
-        usePlayerStore.setState({ status: 'playing', lastError: null });
+        usePlayerStore.setState({ status: 'playing', playIntent: true, lastError: null });
         startClock();
         break;
       case YT_STATE.PAUSED:
       case YT_STATE.CUED:
-        usePlayerStore.setState({ status: 'paused' });
+        usePlayerStore.setState({ status: 'paused', playIntent: false });
         stopClock();
         saveResumeTime(true);
         break;
@@ -263,6 +284,7 @@ playerEngine.setListener({
     const gaveUp = consecutiveErrors >= MAX_CONSECUTIVE_ERRORS;
     usePlayerStore.setState({
       status: 'paused',
+      playIntent: !gaveUp,
       failedVideoIds: failedVideoIds.includes(track.videoId)
         ? failedVideoIds
         : [...failedVideoIds, track.videoId],
@@ -275,7 +297,7 @@ playerEngine.setListener({
       if (!current || Queue.currentTrack(current)?.videoId !== track.videoId) return;
       const moved = Queue.next(current, 'user');
       if (!moved) {
-        usePlayerStore.setState({ status: 'ended' });
+        usePlayerStore.setState({ status: 'ended', playIntent: false });
         return;
       }
       usePlayerStore.setState({ queue: moved });
@@ -289,7 +311,7 @@ function handleEnded() {
   if (!queue) return;
   const moved = Queue.next(queue, 'ended');
   if (!moved) {
-    usePlayerStore.setState({ status: 'ended' });
+    usePlayerStore.setState({ status: 'ended', playIntent: false });
     safeStorage.remove(STORAGE_KEYS.playerResumeTime);
     return;
   }
@@ -329,7 +351,7 @@ function readResumeTime(): number {
 
 if (typeof window !== 'undefined') {
   window.addEventListener('pagehide', () => {
-    if (usePlayerStore.getState().status === 'playing') saveResumeTime(true);
+    if (usePlayerStore.getState().playIntent) saveResumeTime(true);
   });
 }
 

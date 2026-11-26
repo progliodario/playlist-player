@@ -33,12 +33,11 @@ export function useThemeEffect(): void {
 /** Shows the playing track in the window/tab title. */
 export function useDocumentTitleEffect(): void {
   const track = useCurrentTrack();
-  const status = usePlayerStore((s) => s.status);
+  const playing = usePlayerStore((s) => s.playIntent);
   useEffect(() => {
-    const playing = status === 'playing' || status === 'buffering';
     document.title =
       track && playing ? `▶ ${track.title} · ${appConfig.appName}` : appConfig.appName;
-  }, [track, status]);
+  }, [track, playing]);
 }
 
 /**

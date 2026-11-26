@@ -8,11 +8,13 @@ import { requestPlayerFullscreen } from './PlayerViewport.tsx';
 export function PlayerControls({ compact = false }: { compact?: boolean }) {
   const t = useStrings();
   const status = usePlayerStore((s) => s.status);
+  // The button follows the user's intent, not YouTube's state (no state events during ads).
+  const isPlaying = usePlayerStore((s) => s.playIntent);
   const shuffle = usePlayerStore((s) => s.queue?.shuffle ?? false);
   const repeat = usePlayerStore((s) => s.queue?.repeat ?? s.repeat);
   const { togglePlay, next, previous, toggleShuffle, cycleRepeat } = usePlayerStore.getState();
 
-  const isPlaying = status === 'playing' || status === 'buffering' || status === 'loading';
+  const isWaiting = isPlaying && (status === 'buffering' || status === 'loading');
   const repeatLabel =
     repeat === 'one'
       ? t.player.repeatOne
@@ -45,7 +47,7 @@ export function PlayerControls({ compact = false }: { compact?: boolean }) {
       </button>
       <button
         type="button"
-        className={`play-button ${status === 'buffering' || status === 'loading' ? 'is-loading' : ''}`}
+        className={`play-button ${isWaiting ? 'is-loading' : ''}`}
         aria-label={isPlaying ? t.player.pause : t.player.play}
         title={`${isPlaying ? t.player.pause : t.player.play} (K)`}
         onClick={togglePlay}
