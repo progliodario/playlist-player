@@ -5,10 +5,14 @@ Tutte le modifiche rilevanti, dalla più recente. Formato ispirato a
 
 ## [Non rilasciato]
 
+## [1.2.0] — 2026-11-26
+
 ### Aggiunto
 
 - Accesso con Google attivo: "Accedi con Google" in Libreria e Impostazioni mostra le playlist
   private, non in elenco e i video piaciuti del tuo account (sola lettura).
+- App Android a schermo intero, senza la barra dell'indirizzo in alto (Digital Asset Links
+  pubblicati su `progliodario.github.io`); la build dell'APK controlla che restino validi.
 
 ## [1.1.1] — 2026-11-26
 

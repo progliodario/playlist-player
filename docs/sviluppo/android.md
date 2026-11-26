@@ -71,13 +71,19 @@ gh secret set ANDROID_KEYSTORE_BASE64 --body ([Convert]::ToBase64String([IO.File
 Chrome mostra l'app senza barra dell'indirizzo solo se il **dominio** dichiara l'app nel file
 `https://<dominio>/.well-known/assetlinks.json`. Il sito è su `progliodario.github.io/playlist-player/`,
 quindi il file deve stare nella **radice** `progliodario.github.io`, cioè nel repository speciale
-`progliodario/progliodario.github.io`. Finché non c'è, l'app funziona ugualmente ma con una
-sottile barra con l'indirizzo in alto.
+[`progliodario/progliodario.github.io`](https://github.com/progliodario/progliodario.github.io).
+Senza, l'app funziona ugualmente ma con una sottile barra con l'indirizzo in alto.
 
-Per attivarlo:
+**Stato: attivo dalla 1.2.0.** Il file è
+<https://progliodario.github.io/.well-known/assetlinks.json>. Ogni build dell'APK firmata lo
+controlla (passo _Check Digital Asset Links_ del workflow) e mostra un avviso se l'impronta della
+chiave non c'è.
+
+Va aggiornato solo se cambi la chiave di firma o `android.applicationId`: modifica il file
+nel repository `progliodario.github.io` (il suo README spiega come). Per ricrearlo da zero:
 
 1. Copia l'impronta **SHA-256** del certificato dal riepilogo dell'ultimo run del workflow
-   **Android APK** (sezione "Signing certificate").
+   **Android APK** (sezione "Signing certificate"), in maiuscolo con `:` ogni due caratteri.
 2. Crea il repository `progliodario.github.io` (pubblico, con GitHub Pages attivo sul branch `main`)
    contenente `.well-known/assetlinks.json`:
 

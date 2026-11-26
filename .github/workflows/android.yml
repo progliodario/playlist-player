@@ -86,6 +86,22 @@ jobs:
             echo '```'
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
+      # The URL bar is hidden only if the site's assetlinks.json lists this certificate
+      # (file in the repository progliodario.github.io). Warns instead of failing: the APK works anyway.
+      - name: Check Digital Asset Links
+        if: env.ANDROID_KEYSTORE_PATH != ''
+        run: |
+          BUILD_TOOLS=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)
+          CERT=$("${BUILD_TOOLS}apksigner" verify --print-certs playlist-player-*.apk \
+            | sed -n 's/.*SHA-256 digest: //p' | head -1 | tr 'a-f' 'A-F' | sed 's/../&:/g; s/:$//')
+          HOST=$(jq -r .publicUrl app.config.json | sed -E 's#^https://([^/]+).*#\1#')
+          URL="https://$HOST/.well-known/assetlinks.json"
+          if curl -fsSL "$URL" | grep -q "$CERT"; then
+            echo "Digital Asset Links OK: $URL lists $CERT" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::$URL does not list $CERT, so the app shows a URL bar. See docs/sviluppo/android.md"
+          fi
+
       - uses: actions/upload-artifact@v7
         with:
           name: playlist-player-apk
