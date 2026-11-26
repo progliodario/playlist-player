@@ -1,6 +1,9 @@
-/* Reusable components: thumbnails, cards, track rows, segmented control, dialog... */
+/*
+ * COMPONENTS — reusable pieces: thumbnails, segmented control, playlist cards,
+ * track rows, status messages, hint cards, dialog, settings building blocks.
+ */
 
-/* --- Thumbnail ------------------------------------------------------------------------ */
+/* --- Thumbnail ---------------------------------------------------------------------- */
 
 .thumb {
   position: relative;
@@ -33,46 +36,58 @@
   place-items: center;
   width: 100%;
   height: 100%;
-  color: var(--text-faint);
-  background: linear-gradient(135deg, var(--surface-2), var(--surface-3));
+  color: var(--text-muted);
+  background:
+    radial-gradient(circle at 30% 20%, hsl(var(--hue) 80% 60% / 0.45), transparent 60%),
+    linear-gradient(135deg, var(--surface-2), var(--surface-3));
 }
 
-/* --- Segmented control -------------------------------------------------------------- */
+/* --- Segmented control (radio group) -------------------------------------------------- */
 
 .segmented {
   display: inline-flex;
-  padding: 3px;
-  border: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 0.125rem;
+  padding: 0.25rem;
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-pill);
-  background: var(--surface-2);
+  background: var(--surface-glass);
+  backdrop-filter: var(--blur);
 }
 
 .segmented__option {
-  min-height: 32px;
-  padding: 0 var(--space-3);
+  min-height: 2.25rem;
+  padding: 0 var(--space-4);
   border: 0;
   border-radius: var(--radius-pill);
   background: transparent;
   color: var(--text-muted);
-  font-size: 0.87rem;
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.segmented__option:hover {
+  color: var(--text);
 }
 
 .segmented__option.is-active {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+  background: var(--gradient-brand);
+  color: var(--accent-ink);
+  box-shadow: 0 4px 16px -6px var(--accent);
 }
 
-/* --- Playlist grid & card ------------------------------------------------------------ */
+/* --- Playlist grid & card ------------------------------------------------------------- */
 
 .playlist-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: var(--space-5) var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: var(--space-4) var(--space-3);
 }
 
-@media (max-width: 420px) {
+@media (max-width: 26rem) {
   .playlist-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -80,72 +95,170 @@
 
 .playlist-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
   min-width: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-l);
+  transition: background-color 0.25s;
+}
+
+.playlist-card:hover,
+.playlist-card:focus-within {
+  background:
+    radial-gradient(90% 70% at 50% 0%, hsl(var(--hue) 90% 60% / 0.16), transparent 70%),
+    var(--surface-glass);
+}
+
+.playlist-card__art {
+  position: relative;
+  margin-bottom: var(--space-2);
+}
+
+/* Music: a record sleeve, with the vinyl peeking out on the right. */
+.playlist-card--music .playlist-card__art {
+  margin-right: 18%;
+}
+
+.playlist-card__vinyl {
+  position: absolute;
+  top: 5%;
+  right: -20%;
+  width: 90%;
+  height: 90%;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.playlist-card:hover .playlist-card__vinyl,
+.playlist-card:focus-within .playlist-card__vinyl,
+.playlist-card.is-current .playlist-card__vinyl {
+  transform: translateX(12%) rotate(40deg);
+}
+
+.playlist-card__cover {
+  position: relative;
+  z-index: 1;
+  box-shadow:
+    0 22px 40px -18px hsl(var(--hue) 90% 45% / 0.75),
+    var(--shadow-1);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Glossy highlight over the sleeve. */
+.playlist-card__cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.22), transparent 38%);
+  pointer-events: none;
+}
+
+.playlist-card:hover .playlist-card__cover {
+  transform: translateY(-4px) rotate(-1.2deg);
+}
+
+/* Video: a film frame with sprocket holes on top and bottom. */
+.playlist-card--video .playlist-card__cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle, rgb(255 255 255 / 0.85) 0 2px, transparent 2.5px) 0 0.3rem / 0.9rem
+      0.6rem repeat-x,
+    radial-gradient(circle, rgb(255 255 255 / 0.85) 0 2px, transparent 2.5px) 0 100% / 0.9rem 0.6rem
+      repeat-x,
+    linear-gradient(rgb(0 0 0 / 0.7), rgb(0 0 0 / 0.7)) 0 0 / 100% 0.9rem no-repeat,
+    linear-gradient(rgb(0 0 0 / 0.7), rgb(0 0 0 / 0.7)) 0 100% / 100% 0.9rem no-repeat;
+  pointer-events: none;
+}
+
+.playlist-card__badge {
+  position: absolute;
+  z-index: 2;
+  top: var(--space-2);
+  left: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.2rem 0.6rem 0.2rem 0.45rem;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-brand);
+  color: var(--accent-ink);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  box-shadow: var(--shadow-1);
+}
+
+.playlist-card__badge .eq i {
+  background: var(--accent-ink);
+}
+
+.playlist-card__title {
+  font-family: var(--font-ui);
+  font-size: var(--text-md);
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 .playlist-card__link {
   display: block;
-  color: var(--text);
-}
-
-.playlist-card__link:hover {
-  text-decoration: none;
-}
-
-.playlist-card__cover {
-  box-shadow: var(--shadow);
-  transition: transform 0.15s;
-}
-
-.playlist-card__link:hover .playlist-card__cover {
-  transform: translateY(-2px);
-}
-
-.playlist-card.is-current .playlist-card__cover {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.playlist-card__title {
-  margin-top: var(--space-2);
   overflow: hidden;
-  font-size: 0.95rem;
+  color: var(--text);
+  text-decoration: none;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.playlist-card__meta {
-  color: var(--text-muted);
-  font-size: 0.8rem;
+/* Stretched link: the whole card is clickable, the link name stays short. */
+.playlist-card__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: var(--radius-l);
 }
 
-.playlist-card__overlay {
-  position: absolute;
-  inset: 0 0 auto 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  aspect-ratio: 1;
-  padding: var(--space-2);
-  pointer-events: none;
+.playlist-card__link:focus-visible {
+  outline: none;
+}
+
+.playlist-card__link:focus-visible::after {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.playlist-card.is-current .playlist-card__link {
+  color: var(--accent-strong);
+}
+
+.playlist-card__meta {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
 }
 
 .playlist-card__play {
+  position: absolute;
+  z-index: 3; /* above the stretched link */
+  right: var(--space-2);
+  bottom: var(--space-2);
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 46px;
+  width: 3rem;
+  height: 3rem;
   border: 0;
   border-radius: 50%;
-  background: var(--accent);
-  color: var(--accent-contrast);
-  box-shadow: var(--shadow);
+  background: var(--gradient-brand);
+  color: var(--accent-ink);
+  box-shadow: 0 10px 24px -8px var(--accent);
   opacity: 0;
-  transform: translateY(6px);
+  transform: translateY(0.5rem) scale(0.9);
   transition:
-    opacity 0.15s,
-    transform 0.15s;
-  pointer-events: auto;
+    opacity 0.2s,
+    transform 0.2s;
 }
 
 .playlist-card:hover .playlist-card__play,
@@ -154,37 +267,43 @@
   transform: none;
 }
 
+/* Touch screens have no hover: keep the button always visible. */
 @media (hover: none) {
   .playlist-card__play {
-    width: 40px;
-    height: 40px;
-    opacity: 0.95;
+    width: var(--touch);
+    height: var(--touch);
+    opacity: 1;
     transform: none;
   }
 }
 
-.playlist-card--skeleton .thumb {
-  box-shadow: none;
+.playlist-card--skeleton {
+  pointer-events: none;
 }
 
-/* --- Track list ----------------------------------------------------------------------- */
+/* --- Track list --------------------------------------------------------------------------- */
 
 .track-list {
   display: flex;
   flex-direction: column;
+  gap: 0.125rem;
 }
 
 .track-row__button {
   display: grid;
-  grid-template-columns: 32px auto minmax(0, 1fr) auto;
+  grid-template-columns: 2.25rem auto minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--space-3);
   width: 100%;
-  padding: var(--space-2);
-  border: 0;
-  border-radius: var(--radius-s);
+  min-height: 3.5rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-m);
   background: transparent;
   text-align: left;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
 }
 
 .track-list--compact .track-row__button {
@@ -192,35 +311,39 @@
 }
 
 .track-row__button:hover {
-  background: var(--surface-2);
+  border-color: var(--border);
+  background: var(--surface-glass);
 }
 
 .track-row.is-current .track-row__button {
-  background: var(--accent-soft);
+  border-color: hsl(var(--hue) 90% 65% / 0.35);
+  background: linear-gradient(90deg, var(--accent-soft), transparent 80%), var(--surface-glass);
 }
 
 .track-row.is-current .track-row__title {
   color: var(--accent-strong);
 }
 
-.track-row.is-unplayable {
-  opacity: 0.55;
+.track-row.is-unplayable .track-row__text {
+  opacity: 0.7;
 }
 
 .track-row__index {
+  display: grid;
+  place-items: center;
   color: var(--text-faint);
-  font-size: 0.85rem;
-  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
 .track-row__thumb {
-  width: 44px;
+  width: 2.75rem;
   border-radius: var(--radius-s);
 }
 
 .track-row__thumb.thumb--wide {
-  width: 88px;
+  width: 5.5rem;
 }
 
 .track-row__text {
@@ -237,71 +360,47 @@
 }
 
 .track-row__title {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .track-row__subtitle {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .track-row__duration {
   color: var(--text-faint);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   font-variant-numeric: tabular-nums;
 }
 
-/* Animated "now playing" bars. */
-.eq {
-  display: inline-flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 14px;
-}
-
-.eq i {
-  width: 3px;
-  height: 100%;
-  border-radius: 1px;
-  background: var(--accent-strong);
-  animation: eq 0.9s ease-in-out infinite;
-}
-
-.eq i:nth-child(2) {
-  animation-delay: -0.3s;
-}
-
-.eq i:nth-child(3) {
-  animation-delay: -0.6s;
-}
-
-@keyframes eq {
-  0%,
-  100% {
-    height: 30%;
-  }
-  50% {
-    height: 100%;
-  }
-}
-
-/* --- Status messages, hints ------------------------------------------------------------ */
+/* --- Status messages and hints -------------------------------------------------------------- */
 
 .status-message {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-6) var(--space-4);
+  padding: var(--space-7) var(--space-4);
   color: var(--text-muted);
   text-align: center;
 }
 
+.status-message p {
+  max-width: 32rem;
+  font-size: var(--text-lg);
+}
+
 .status-message--error {
   color: var(--danger);
+}
+
+.status-message__art {
+  width: min(14rem, 60vw);
+  filter: drop-shadow(0 18px 30px hsl(var(--hue) 90% 50% / 0.35));
 }
 
 .hint-card {
@@ -309,59 +408,107 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3) var(--space-4);
-  padding: var(--space-4);
-  border: 1px dashed var(--border);
-  border-radius: var(--radius-m);
-  color: var(--text-muted);
+  padding: var(--space-5);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-l);
+  background:
+    radial-gradient(80% 140% at 0% 0%, var(--accent-soft), transparent 60%), var(--surface-glass);
+  backdrop-filter: var(--blur);
 }
 
 .hint-card p {
-  flex: 1 1 220px;
+  flex: 1 1 16rem;
+  color: var(--text);
+}
+
+.hint-card__icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--gradient-brand);
+  color: var(--accent-ink);
 }
 
 .section-hint {
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+  color: var(--text-muted);
 }
 
 .notice {
-  padding: var(--space-3);
-  border-radius: var(--radius-s);
+  padding: var(--space-4);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-m);
   background: var(--surface-2);
-  color: var(--text-muted);
+  color: var(--text);
 }
 
 .form-error {
   color: var(--danger);
-  font-size: 0.9rem;
+  font-weight: 700;
 }
 
-/* --- Dialog ------------------------------------------------------------------------------ */
+/* --- Dialog ---------------------------------------------------------------------------------- */
 
 .dialog {
-  width: min(92vw, 480px);
+  width: min(92vw, 32rem);
   padding: 0;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-l);
-  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(120% 80% at 100% 0%, var(--accent-soft), transparent 55%), var(--surface);
   color: var(--text);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-2);
 }
 
 .dialog::backdrop {
   background: var(--overlay);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px);
 }
 
 .dialog__body {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding: var(--space-5);
+  padding: var(--space-6);
 }
 
 .dialog__actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--space-2);
   margin-top: var(--space-2);
+}
+
+/* --- Small building blocks used in Settings ------------------------------------------------- */
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 700;
+}
+
+.shortcut-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.shortcut-list__row {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, auto) 1fr;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.shortcut-list dd {
+  color: var(--text-muted);
+}
+
+.link-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }

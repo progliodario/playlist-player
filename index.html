@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#12101c" />
+    <meta name="theme-color" content="#0d0a1f" />
     <meta
       name="description"
       content="Le playlist YouTube di Dario, video e canzoni, in un'unica app."
@@ -11,6 +11,25 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <title>Playlist Player</title>
+    <script>
+      // Apply the saved theme and language before the first paint (no flash of the wrong
+      // theme). Same logic as useThemeEffect / useLanguageEffect in src/app/effects.ts.
+      (function () {
+        try {
+          var state = JSON.parse(localStorage.getItem('pp:settings') || '{}').state || {};
+          var theme = state.theme || 'auto';
+          if (theme === 'auto') {
+            theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          }
+          document.documentElement.dataset.theme = theme;
+          var language = state.language || 'auto';
+          if (language === 'auto') language = /^it/i.test(navigator.language) ? 'it' : 'en';
+          document.documentElement.lang = language;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

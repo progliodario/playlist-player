@@ -13,6 +13,7 @@ import {
   type LibraryFilter,
   type LibrarySort,
 } from '../../state/settings-store.ts';
+import { NightSkyHero } from '../art/NightSkyHero.tsx';
 import { AddPlaylistDialog } from '../components/AddPlaylistDialog.tsx';
 import { PlaylistCard } from '../components/PlaylistCard.tsx';
 import { SearchField } from '../components/SearchField.tsx';
@@ -21,6 +22,10 @@ import { StatusMessage } from '../components/StatusMessage.tsx';
 import { playlistTitle } from '../display.ts';
 import { Icon } from '../icons.tsx';
 
+/**
+ * Library page: illustrated hero, search/filter/sort toolbar, one section per source
+ * (account, channel catalog, added by link).
+ */
 export function LibraryView() {
   const t = useStrings();
   const sources = useLibraryStore((s) => s.sources);
@@ -51,41 +56,65 @@ export function LibraryView() {
   const isFiltering = query.trim() !== '' || filter !== 'all';
   const totalVisible = SOURCE_ORDER.reduce((n, kind) => n + visibleBySource[kind].length, 0);
   const anyReady = SOURCE_ORDER.some((kind) => sources[kind].status === 'ready');
+  const allPlaylists = SOURCE_ORDER.flatMap((kind) => sources[kind].playlists);
+  const totalTracks = allPlaylists.reduce((n, p) => n + p.itemCount, 0);
 
   return (
     <div className="view library">
-      <header className="view__header">
-        <h1>{t.library.title}</h1>
-        <div className="library__toolbar">
-          <SearchField
-            value={query}
-            onChange={setQuery}
-            placeholder={t.library.searchPlaceholder}
-          />
-          <SegmentedControl<LibraryFilter>
-            label={t.library.title}
-            value={filter}
-            onChange={setLibraryFilter}
-            options={[
-              { value: 'all', label: t.library.filterAll },
-              { value: 'music', label: t.library.filterMusic },
-              { value: 'video', label: t.library.filterVideo },
-            ]}
-          />
-          <label className="select">
-            <span className="visually-hidden">{t.library.sortLabel}</span>
-            <select value={sort} onChange={(e) => setLibrarySort(e.target.value as LibrarySort)}>
-              <option value="default">{t.library.sortDefault}</option>
-              <option value="title">{t.library.sortTitle}</option>
-              <option value="size">{t.library.sortSize}</option>
-              <option value="recent">{t.library.sortRecent}</option>
-            </select>
-          </label>
+      <header className="library-hero">
+        <NightSkyHero className="library-hero__art" />
+        <div className="library-hero__text">
+          <p className="library-hero__greeting">
+            <Icon name="sparkle" size={16} /> {t.library.greeting(new Date().getHours())}
+          </p>
+          <h1 className="library-hero__title" tabIndex={-1}>
+            {t.library.title}
+          </h1>
+          {anyReady && (
+            <p className="library-hero__subtitle">
+              {t.library.heroSubtitle(allPlaylists.length, totalTracks)}
+            </p>
+          )}
         </div>
       </header>
 
+      <div className="library__toolbar">
+        <SearchField value={query} onChange={setQuery} label={t.library.searchPlaceholder} />
+        <SegmentedControl<LibraryFilter>
+          label={t.library.filterLabel}
+          value={filter}
+          onChange={setLibraryFilter}
+          options={[
+            { value: 'all', label: t.library.filterAll },
+            { value: 'music', label: t.library.filterMusic },
+            { value: 'video', label: t.library.filterVideo },
+          ]}
+        />
+        <div className="select">
+          <label htmlFor="library-sort" className="visually-hidden">
+            {t.library.sortLabel}
+          </label>
+          <Icon name="settings" size={16} />
+          <select
+            id="library-sort"
+            value={sort}
+            onChange={(e) => setLibrarySort(e.target.value as LibrarySort)}
+          >
+            <option value="default">{t.library.sortDefault}</option>
+            <option value="title">{t.library.sortTitle}</option>
+            <option value="size">{t.library.sortSize}</option>
+            <option value="recent">{t.library.sortRecent}</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Tells screen reader users how many results the filters leave (WCAG 4.1.3). */}
+      <p className="visually-hidden" role="status">
+        {isFiltering && anyReady ? t.library.resultsCount(totalVisible) : ''}
+      </p>
+
       {isFiltering && anyReady && totalVisible === 0 && (
-        <StatusMessage>{t.library.noResults}</StatusMessage>
+        <StatusMessage art>{t.library.noResults}</StatusMessage>
       )}
 
       {SOURCE_ORDER.map((kind) => {
@@ -97,6 +126,7 @@ export function LibraryView() {
         return (
           <LibrarySection
             key={kind}
+            kind={kind}
             title={sectionTitle(kind, t)}
             count={state.status === 'ready' ? visible.length : null}
             action={
@@ -146,7 +176,9 @@ function SectionBody({
     const expired = authStatus === 'expired';
     return (
       <div className="hint-card">
-        <Icon name="account" size={28} />
+        <span className="hint-card__icon" aria-hidden="true">
+          <Icon name="account" size={26} />
+        </span>
         <p>{expired ? t.library.accountExpiredHint : t.library.accountSignedOutHint}</p>
         <button
           type="button"
@@ -174,32 +206,35 @@ function SectionBody({
     );
   }
   if (kind === 'manual' && state.playlists.length === 0) {
-    return <p className="muted section-hint">{t.library.manualEmptyHint}</p>;
+    return <p className="section-hint">{t.library.manualEmptyHint}</p>;
   }
   return (
-    <div className="playlist-grid">
+    <ul className="playlist-grid">
       {visible.map((playlist) => (
         <PlaylistCard key={playlist.key} playlist={playlist} />
       ))}
-    </div>
+    </ul>
   );
 }
 
 function LibrarySection({
+  kind,
   title,
   count,
   action,
   children,
 }: {
+  kind: SourceKind;
   title: string;
   count: number | null;
   action: ReactNode;
   children: ReactNode;
 }) {
+  const headingId = `library-section-${kind}`;
   return (
-    <section className="library-section">
+    <section className="library-section" aria-labelledby={headingId}>
       <header className="library-section__header">
-        <h2>
+        <h2 id={headingId} className="section-title">
           {title}
           {count !== null && <span className="library-section__count">{count}</span>}
         </h2>
@@ -211,16 +246,22 @@ function LibrarySection({
 }
 
 function SkeletonGrid() {
+  const t = useStrings();
   return (
-    <div className="playlist-grid" aria-hidden="true">
-      {Array.from({ length: 6 }, (_, i) => (
-        <div key={i} className="playlist-card playlist-card--skeleton">
-          <div className="thumb thumb--square skeleton" />
-          <div className="skeleton skeleton--line" />
-          <div className="skeleton skeleton--line skeleton--short" />
-        </div>
-      ))}
-    </div>
+    <>
+      <p className="visually-hidden" role="status">
+        {t.common.loading}
+      </p>
+      <div className="playlist-grid" aria-hidden="true">
+        {Array.from({ length: 6 }, (_, i) => (
+          <div key={i} className="playlist-card playlist-card--skeleton">
+            <div className="thumb thumb--square skeleton" />
+            <div className="skeleton skeleton--line" />
+            <div className="skeleton skeleton--line skeleton--short" />
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 

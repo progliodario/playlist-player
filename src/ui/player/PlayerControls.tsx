@@ -1,10 +1,15 @@
 import type { CSSProperties } from 'react';
 import { useStrings } from '../../i18n/index.ts';
 import { usePlayerStore } from '../../player/player-store.ts';
+import { useSettingsStore } from '../../state/settings-store.ts';
 import { Icon } from '../icons.tsx';
 import { requestPlayerFullscreen } from './PlayerViewport.tsx';
 
-/** Transport buttons. `compact` hides shuffle/repeat (used in the phone mini panel). */
+/**
+ * Transport buttons. `compact` hides shuffle/repeat (used in the phone mini panel).
+ * aria-keyshortcuts tells assistive technology about the single-key shortcuts
+ * (only when they are enabled in Settings).
+ */
 export function PlayerControls({ compact = false }: { compact?: boolean }) {
   const t = useStrings();
   const status = usePlayerStore((s) => s.status);
@@ -12,9 +17,11 @@ export function PlayerControls({ compact = false }: { compact?: boolean }) {
   const isPlaying = usePlayerStore((s) => s.playIntent);
   const shuffle = usePlayerStore((s) => s.queue?.shuffle ?? false);
   const repeat = usePlayerStore((s) => s.queue?.repeat ?? s.repeat);
+  const shortcuts = useSettingsStore((s) => s.keyboardShortcuts);
   const { togglePlay, next, previous, toggleShuffle, cycleRepeat } = usePlayerStore.getState();
 
   const isWaiting = isPlaying && (status === 'buffering' || status === 'loading');
+  const keys = (value: string) => (shortcuts ? value : undefined);
   const repeatLabel =
     repeat === 'one'
       ? t.player.repeatOne
@@ -30,7 +37,8 @@ export function PlayerControls({ compact = false }: { compact?: boolean }) {
           className={`icon-button ${shuffle ? 'is-active' : ''}`}
           aria-pressed={shuffle}
           aria-label={t.player.shuffle}
-          title={`${t.player.shuffle} (S)`}
+          aria-keyshortcuts={keys('S')}
+          title={t.player.shuffle}
           onClick={toggleShuffle}
         >
           <Icon name="shuffle" />
@@ -40,7 +48,8 @@ export function PlayerControls({ compact = false }: { compact?: boolean }) {
         type="button"
         className="icon-button"
         aria-label={t.player.previous}
-        title={`${t.player.previous} (P)`}
+        aria-keyshortcuts={keys('P')}
+        title={t.player.previous}
         onClick={previous}
       >
         <Icon name="previous" />
@@ -49,16 +58,18 @@ export function PlayerControls({ compact = false }: { compact?: boolean }) {
         type="button"
         className={`play-button ${isWaiting ? 'is-loading' : ''}`}
         aria-label={isPlaying ? t.player.pause : t.player.play}
-        title={`${isPlaying ? t.player.pause : t.player.play} (K)`}
+        aria-keyshortcuts={keys('K Space')}
+        title={isPlaying ? t.player.pause : t.player.play}
         onClick={togglePlay}
       >
-        <Icon name={isPlaying ? 'pause' : 'play'} size={compact ? 22 : 26} />
+        <Icon name={isPlaying ? 'pause' : 'play'} size={compact ? 22 : 28} />
       </button>
       <button
         type="button"
         className="icon-button"
         aria-label={t.player.next}
-        title={`${t.player.next} (N)`}
+        aria-keyshortcuts={keys('N')}
+        title={t.player.next}
         onClick={next}
       >
         <Icon name="next" />
@@ -68,7 +79,8 @@ export function PlayerControls({ compact = false }: { compact?: boolean }) {
           type="button"
           className={`icon-button ${repeat !== 'off' ? 'is-active' : ''}`}
           aria-label={repeatLabel}
-          title={`${repeatLabel} (R)`}
+          aria-keyshortcuts={keys('R')}
+          title={repeatLabel}
           onClick={cycleRepeat}
         >
           <Icon name={repeat === 'one' ? 'repeatOne' : 'repeat'} />
@@ -82,6 +94,7 @@ export function VolumeControl() {
   const t = useStrings();
   const volume = usePlayerStore((s) => s.volume);
   const muted = usePlayerStore((s) => s.muted);
+  const shortcuts = useSettingsStore((s) => s.keyboardShortcuts);
   const { setVolume, toggleMute } = usePlayerStore.getState();
   const shown = muted ? 0 : volume;
   return (
@@ -90,7 +103,8 @@ export function VolumeControl() {
         type="button"
         className="icon-button"
         aria-label={muted ? t.player.unmute : t.player.mute}
-        title={`${muted ? t.player.unmute : t.player.mute} (M)`}
+        aria-keyshortcuts={shortcuts ? 'M' : undefined}
+        title={muted ? t.player.unmute : t.player.mute}
         onClick={toggleMute}
       >
         <Icon name={muted || volume === 0 ? 'muted' : 'volume'} />
@@ -100,9 +114,10 @@ export function VolumeControl() {
         className="range"
         min={0}
         max={100}
-        step={1}
+        step={5}
         value={shown}
         aria-label={t.player.volume}
+        aria-valuetext={t.player.volumeValue(shown)}
         style={{ '--fill': `${shown}%` } as CSSProperties}
         onChange={(event) => setVolume(Number(event.target.value))}
       />

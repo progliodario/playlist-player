@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { currentTrackIndex, upcomingTrackIndices } from '../../domain/queue.ts';
 import { useStrings } from '../../i18n/index.ts';
 import { usePlayerStore } from '../../player/player-store.ts';
@@ -7,11 +8,12 @@ import { TrackRow } from '../components/TrackRow.tsx';
 /** Rendering many rows is cheap, but keep the panel snappy on old phones. */
 const MAX_VISIBLE = 150;
 
-/** "Up next" list. Clicking a row jumps there. */
+/** "Up next" list: the current track first, then what follows. Clicking a row jumps there. */
 export function QueueList() {
   const t = useStrings();
+  const headingId = useId();
   const queue = usePlayerStore((s) => s.queue);
-  const status = usePlayerStore((s) => s.status);
+  const playing = usePlayerStore((s) => s.playIntent);
   const failed = usePlayerStore((s) => s.failedVideoIds);
   const jumpTo = usePlayerStore((s) => s.jumpTo);
   const clearQueue = usePlayerStore((s) => s.clearQueue);
@@ -25,9 +27,11 @@ export function QueueList() {
   const hidden = upcoming.length + 1 - visible.length;
 
   return (
-    <section className="queue" aria-label={t.player.upNext}>
+    <section className="queue" aria-labelledby={headingId}>
       <header className="queue__header">
-        <h2>{t.player.upNext}</h2>
+        <h2 id={headingId} className="queue__title">
+          {t.player.upNext}
+        </h2>
         <button type="button" className="button button--ghost button--small" onClick={clearQueue}>
           {t.player.clearQueue}
         </button>
@@ -42,16 +46,15 @@ export function QueueList() {
               track={track}
               kind={kind}
               isCurrent={trackIndex === current}
-              isPlaying={status === 'playing'}
+              isPlaying={playing}
               isUnplayable={failed.includes(track.videoId)}
-              unplayableLabel={t.playlist.unplayable}
               onPlay={() => jumpTo(trackIndex)}
             />
           );
         })}
       </ol>
-      {hidden > 0 && <p className="queue__more muted">+{hidden}</p>}
-      {upcoming.length === 0 && <p className="queue__more muted">{t.player.queueEnd}</p>}
+      {hidden > 0 && <p className="queue__more">{t.player.moreInQueue(hidden)}</p>}
+      {upcoming.length === 0 && <p className="queue__more">{t.player.queueEnd}</p>}
     </section>
   );
 }

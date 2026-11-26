@@ -78,6 +78,21 @@ const PATHS = {
     </>
   ),
   plus: <path d="M12 5v14M5 12h14" />,
+  check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
+  headphones: (
+    <>
+      <path d="M4 15v-3a8 8 0 0 1 16 0v3" />
+      <rect x="3.5" y="14" width="4.5" height="6.5" rx="1.5" fill="currentColor" />
+      <rect x="16" y="14" width="4.5" height="6.5" rx="1.5" fill="currentColor" />
+    </>
+  ),
+  sparkle: (
+    <path
+      d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"
+      fill="currentColor"
+      stroke="none"
+    />
+  ),
   search: (
     <>
       <circle cx="11" cy="11" r="6" />

@@ -1,68 +1,159 @@
 /*
- * Design tokens. Change colors, spacing and radii HERE, not in component styles.
- * Dark is the default; <html data-theme="light"> switches to the light palette
- * (set by useThemeEffect in src/app/effects.ts).
+ * DESIGN TOKENS — the only place where colors, fonts, sizes and radii are defined.
+ * Component styles use these variables; never hard-code a color elsewhere.
+ *
+ * Two themes (see docs/sviluppo/grafica.md):
+ *   "Notturno" (default, dark): a night sky with aurora lights, neon magenta, gold, violet.
+ *   "Alba"     (light):         a warm dawn sky, peach, rose and lilac.
+ * <html data-theme="light"> switches theme (set by useThemeEffect in src/app/effects.ts).
+ *
+ * Contrast: text colors are checked against the surfaces by src/styles/contrast.test.ts
+ * (WCAG AA 4.5:1 for text, 3:1 for focus ring and UI parts). Run `npm test` after edits.
  */
+
 :root {
   color-scheme: dark;
 
-  --bg: #12101c;
-  --surface: #1a1726;
-  --surface-2: #221e31;
-  --surface-3: #2d283f;
-  --border: #322d45;
-  --text: #f3f1f9;
-  --text-muted: #a8a2b9;
-  --text-faint: #6f6984;
-  --accent: #9479ff;
-  --accent-strong: #b39fff;
-  --accent-soft: rgb(148 121 255 / 0.16);
-  --accent-contrast: #ffffff;
-  --danger: #ff7a85;
-  --success: #4fd1a5;
-  --brand-gradient: linear-gradient(135deg, #8b6cff 0%, #ff5c8a 100%);
-  --shadow: 0 10px 30px rgb(0 0 0 / 0.35);
-  --overlay: rgb(8 6 14 / 0.6);
+  /* --- Surfaces (opaque values are the ones contrast-tested) --- */
+  --bg: #0d0a1f;
+  --surface: #17122f;
+  --surface-2: #211a42;
+  --surface-3: #2d2457;
+  --surface-glass: rgb(23 18 47 / 0.74);
+  --surface-raised: rgb(33 26 66 / 0.84);
+  --border: rgb(255 255 255 / 0.1);
+  --border-strong: #6a5aa8;
 
-  --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-size: 15px;
+  /* --- Text --- */
+  --text: #f8f4ff;
+  --text-muted: #cfc6ee;
+  --text-faint: #b0a6d8;
 
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
+  /* --- Accents --- */
+  --accent: #ff6aa8;
+  --accent-ink: #1b0b24; /* text on --accent and on --gradient-brand */
+  --accent-strong: #ff9cc8; /* accent used as text (links, active items) */
+  --accent-soft: rgb(255 106 168 / 0.16);
+  --violet: #9b7bff;
+  --gold: #ffc65c;
+  --teal: #4ee6d2;
+  --danger: #ff8f8f;
+  --success: #6ff2c6;
+  --focus: #ffe36e;
+  --gradient-brand: linear-gradient(120deg, var(--violet) 0%, var(--accent) 52%, var(--gold) 100%);
 
-  --radius-s: 8px;
-  --radius-m: 12px;
-  --radius-l: 18px;
+  /* --- Depth --- */
+  --shadow-1: 0 2px 10px rgb(0 0 0 / 0.35);
+  --shadow-2: 0 18px 50px rgb(4 2 16 / 0.55);
+  --overlay: rgb(6 4 18 / 0.7);
+  --blur: blur(18px) saturate(140%);
+
+  /* --- Page backdrop: aurora blobs, stars, film grain --- */
+  --aurora-1: rgb(123 76 255 / 0.42);
+  --aurora-2: rgb(255 61 139 / 0.3);
+  --aurora-3: rgb(24 201 181 / 0.2);
+  --aurora-4: rgb(255 178 56 / 0.16);
+  --star: rgb(255 248 230 / 0.85);
+  --grain-opacity: 0.07;
+
+  /* --- Illustrations (src/ui/art/) --- */
+  --art-sky-top: #0b0726;
+  --art-sky-mid: #26105c;
+  --art-sky-bottom: #5d1a73;
+  --art-moon: #ffe9b0;
+  --art-star: #fff8e6;
+  --art-mountain-far: #2b1a62;
+  --art-city: #150d35;
+  --art-window: #ffd36e;
+  --art-hill: var(--bg);
+  --art-note: #ffd6ea;
+  --vinyl-disc: #0e0b18;
+  --vinyl-groove: rgb(255 255 255 / 0.07);
+
+  /* --- Typography (self-hosted variable fonts, see src/main.tsx) --- */
+  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-ui:
+    'Manrope Variable', 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.875rem;
+  --text-hero: clamp(2.25rem, 1.4rem + 3.2vw, 3.75rem);
+
+  /* --- Spacing, radii, sizes --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --radius-s: 0.625rem;
+  --radius-m: 1rem;
+  --radius-l: 1.5rem;
+  --radius-xl: 2rem;
   --radius-pill: 999px;
-
-  --sidebar-width: 232px;
-  --panel-width: 400px;
-  --content-max: 1200px;
-  --touch: 44px;
+  --sidebar-width: 16rem;
+  --panel-width: 25rem;
+  --content-max: 78rem;
+  --touch: 2.75rem; /* 44px minimum target size */
 
   --z-toast: 50;
+  --z-skip: 100;
+
+  /* Default hue for playlist-tinted elements (overridden inline with style="--hue: N"). */
+  --hue: 320;
 }
 
 :root[data-theme='light'] {
   color-scheme: light;
 
-  --bg: #f6f5fb;
+  --bg: #fff7f0;
   --surface: #ffffff;
-  --surface-2: #f0eef7;
-  --surface-3: #e4e0ef;
-  --border: #e2deec;
-  --text: #17141f;
-  --text-muted: #5a546a;
-  --text-faint: #8d879c;
-  --accent: #6a4cf0;
-  --accent-strong: #5534e0;
-  --accent-soft: rgb(106 76 240 / 0.12);
-  --danger: #d6334a;
-  --success: #138a63;
-  --shadow: 0 10px 30px rgb(30 20 60 / 0.12);
-  --overlay: rgb(20 16 30 / 0.45);
+  --surface-2: #fff0e8;
+  --surface-3: #fbe1d6;
+  --surface-glass: rgb(255 255 255 / 0.8);
+  --surface-raised: rgb(255 255 255 / 0.92);
+  --border: rgb(70 30 60 / 0.12);
+  --border-strong: #b98a7d;
+
+  --text: #2b1438;
+  --text-muted: #5a4368;
+  --text-faint: #6b5578;
+
+  --accent: #c2185b;
+  --accent-ink: #ffffff;
+  --accent-strong: #a01048;
+  --accent-soft: rgb(194 24 91 / 0.1);
+  --violet: #6a42d6;
+  --gold: #a65400;
+  --teal: #00796b;
+  --danger: #b3261e;
+  --success: #136f48;
+  --focus: #4a1fb8;
+
+  --shadow-1: 0 2px 10px rgb(90 40 60 / 0.12);
+  --shadow-2: 0 18px 50px rgb(120 60 80 / 0.18);
+  --overlay: rgb(43 20 56 / 0.45);
+
+  --aurora-1: rgb(255 176 140 / 0.55);
+  --aurora-2: rgb(255 158 196 / 0.45);
+  --aurora-3: rgb(196 170 255 / 0.4);
+  --aurora-4: rgb(255 214 120 / 0.4);
+  --star: transparent;
+  --grain-opacity: 0.05;
+
+  --art-sky-top: #ffd3bd;
+  --art-sky-mid: #ffb0c6;
+  --art-sky-bottom: #d8c2ff;
+  --art-moon: #ffcf5a;
+  --art-star: transparent;
+  --art-mountain-far: #cda7e8;
+  --art-city: #9c78c4;
+  --art-window: #fff4cc;
+  --art-note: #ffffff;
+  --vinyl-disc: #1d1428;
+  --vinyl-groove: rgb(255 255 255 / 0.09);
 }

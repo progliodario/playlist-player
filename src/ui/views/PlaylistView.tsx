@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { playPlaylistByKey, playTrackOfPlaylist, removeManualPlaylist } from '../../app/actions.ts';
 import { navigate, routeHref } from '../../app/router.ts';
 import { matchesSearch } from '../../domain/format.ts';
@@ -10,6 +10,9 @@ import { usePlayerStore } from '../../player/player-store.ts';
 import { useAuthStore } from '../../sources/account/auth-store.ts';
 import { useEffectiveKind, useLibraryStore, useSummary } from '../../state/library-store.ts';
 import { useSettingsStore } from '../../state/settings-store.ts';
+import { hueFromString } from '../art/art-math.ts';
+import { Vinyl } from '../art/Vinyl.tsx';
+import { ExternalLink } from '../components/ExternalLink.tsx';
 import { SearchField } from '../components/SearchField.tsx';
 import { SegmentedControl } from '../components/SegmentedControl.tsx';
 import { StatusMessage } from '../components/StatusMessage.tsx';
@@ -20,6 +23,7 @@ import { Icon } from '../icons.tsx';
 
 type KindChoice = 'auto' | PlaylistKind;
 
+/** One playlist: illustrated header (sleeve + record), actions, searchable track list. */
 export function PlaylistView({ playlistKey }: { playlistKey: string }) {
   const t = useStrings();
   const detail = useLibraryStore((s) => s.details[playlistKey]);
@@ -31,13 +35,14 @@ export function PlaylistView({ playlistKey }: { playlistKey: string }) {
   const [query, setQuery] = useState('');
 
   const queue = usePlayerStore((s) => s.queue);
-  const status = usePlayerStore((s) => s.status);
+  const playing = usePlayerStore((s) => s.playIntent);
   const failed = usePlayerStore((s) => s.failedVideoIds);
 
+  useEffect(() => setQuery(''), [playlistKey]);
+  // Load when missing (first visit, or after a catalog refresh dropped the cached tracks).
   useEffect(() => {
-    void loadPlaylist(playlistKey);
-    setQuery('');
-  }, [playlistKey, loadPlaylist]);
+    if (!detail) void loadPlaylist(playlistKey);
+  }, [playlistKey, detail, loadPlaylist]);
 
   const playlist = detail?.playlist ?? null;
   const base = playlist ?? summary;
@@ -51,11 +56,12 @@ export function PlaylistView({ playlistKey }: { playlistKey: string }) {
   }, [playlist, query]);
 
   if (!base) {
-    if (detail?.status === 'error') {
-      return (
-        <div className="view">
+    return (
+      <div className="view">
+        {detail?.status === 'error' ? (
           <StatusMessage
             tone="error"
+            art
             action={
               <a className="button" href={routeHref({ name: 'library' })}>
                 {t.playlist.back}
@@ -64,17 +70,15 @@ export function PlaylistView({ playlistKey }: { playlistKey: string }) {
           >
             {t.playlist.notFound}
           </StatusMessage>
-        </div>
-      );
-    }
-    return (
-      <div className="view">
-        <StatusMessage tone="loading">{t.playlist.loading}</StatusMessage>
+        ) : (
+          <StatusMessage tone="loading">{t.playlist.loading}</StatusMessage>
+        )}
       </div>
     );
   }
 
   const title = playlistTitle(base, t);
+  const hue = hueFromString(playlistKey);
   const isQueueSource = queue?.sourceKey === playlistKey;
   const playingIndex = isQueueSource && queue ? currentTrackIndex(queue) : -1;
   const cover =
@@ -83,19 +87,31 @@ export function PlaylistView({ playlistKey }: { playlistKey: string }) {
   const kindChoice: KindChoice = override ?? 'auto';
 
   return (
-    <div className={`view playlist-view playlist-view--${kind}`}>
+    <div
+      className={`view playlist-view playlist-view--${kind}`}
+      style={{ '--hue': hue, '--cover': cover ? `url("${cover}")` : 'none' } as CSSProperties}
+    >
+      <div className="playlist-view__backdrop" aria-hidden="true" />
+
       <a className="back-link" href={routeHref({ name: 'library' })}>
         <Icon name="back" size={18} /> {t.playlist.back}
       </a>
 
       <header className="playlist-hero">
-        <Thumbnail src={cover} kind={kind} shape="square" className="playlist-hero__cover" />
+        <div className={`playlist-hero__art playlist-hero__art--${kind}`}>
+          {kind === 'music' && (
+            <Vinyl hue={hue} spinning={isQueueSource && playing} className="playlist-hero__vinyl" />
+          )}
+          <Thumbnail src={cover} kind={kind} shape="square" className="playlist-hero__cover" />
+        </div>
         <div className="playlist-hero__body">
           <p className="playlist-hero__kind">
             <Icon name={kind === 'music' ? 'music' : 'video'} size={16} />
             {kind === 'music' ? t.playlist.kindMusic : t.playlist.kindVideo}
           </p>
-          <h1 className="playlist-hero__title">{title}</h1>
+          <h1 className="playlist-hero__title" tabIndex={-1}>
+            {title}
+          </h1>
           {base.description && <p className="playlist-hero__description">{base.description}</p>}
           <p className="playlist-hero__meta">
             {joinMeta(
@@ -108,28 +124,23 @@ export function PlaylistView({ playlistKey }: { playlistKey: string }) {
           <div className="playlist-hero__actions">
             <button
               type="button"
-              className="button button--primary"
+              className="button button--primary button--large"
               disabled={!playlist}
               onClick={() => void playPlaylistByKey(playlistKey)}
             >
-              <Icon name="play" size={18} /> {t.playlist.play}
+              <Icon name="play" size={20} /> {t.playlist.play}
             </button>
             <button
               type="button"
-              className="button"
+              className="button button--large"
               disabled={!playlist}
               onClick={() => void playPlaylistByKey(playlistKey, { shuffle: true })}
             >
-              <Icon name="shuffle" size={18} /> {t.playlist.shuffle}
+              <Icon name="shuffle" size={20} /> {t.playlist.shuffle}
             </button>
-            <a
-              className="button button--ghost"
-              href={playlistUrl(base.id)}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <ExternalLink className="button button--ghost" href={playlistUrl(base.id)}>
               <Icon name="external" size={18} /> {t.playlist.openOnYouTube}
-            </a>
+            </ExternalLink>
             {base.source === 'manual' && (
               <button
                 type="button"
@@ -144,7 +155,8 @@ export function PlaylistView({ playlistKey }: { playlistKey: string }) {
             )}
           </div>
           <div className="playlist-hero__kind-choice">
-            <span className="muted">{t.playlist.kindLabel}</span>
+            {/* Visible caption; the radio group carries the same text as its label. */}
+            <span aria-hidden="true">{t.playlist.kindLabel}</span>
             <SegmentedControl<KindChoice>
               label={t.playlist.kindLabel}
               value={kindChoice}
@@ -160,7 +172,7 @@ export function PlaylistView({ playlistKey }: { playlistKey: string }) {
       </header>
 
       {base.source === 'manual' && !signedIn && (
-        <p className="muted section-hint">{t.playlist.signedOutLimit}</p>
+        <p className="section-hint">{t.playlist.signedOutLimit}</p>
       )}
 
       {detail?.status === 'loading' && !playlist && (
@@ -184,15 +196,22 @@ export function PlaylistView({ playlistKey }: { playlistKey: string }) {
       )}
 
       {playlist && (
-        <>
-          {playlist.tracks.length > 8 && (
-            <div className="playlist-view__search">
-              <SearchField
-                value={query}
-                onChange={setQuery}
-                placeholder={t.playlist.searchPlaceholder}
-              />
-            </div>
+        <section className="playlist-view__tracks" aria-labelledby="tracks-heading">
+          <div className="playlist-view__tracks-header">
+            <h2 id="tracks-heading" className="section-title">
+              {t.playlist.tracksHeading}
+              <span className="library-section__count">{playlist.tracks.length}</span>
+            </h2>
+            {playlist.tracks.length > 8 && (
+              <SearchField value={query} onChange={setQuery} label={t.playlist.searchPlaceholder} />
+            )}
+          </div>
+          {query && (
+            <p className="visually-hidden" role="status">
+              {rows.length === 0
+                ? t.playlist.noTrackResults
+                : t.library.itemCount(rows.length, kind)}
+            </p>
           )}
           {rows.length === 0 && query && <StatusMessage>{t.playlist.noTrackResults}</StatusMessage>}
           <ol className="track-list">
@@ -203,14 +222,13 @@ export function PlaylistView({ playlistKey }: { playlistKey: string }) {
                 index={index + 1}
                 kind={kind}
                 isCurrent={index === playingIndex}
-                isPlaying={status === 'playing'}
+                isPlaying={playing}
                 isUnplayable={failed.includes(track.videoId)}
-                unplayableLabel={t.playlist.unplayable}
                 onPlay={() => void playTrackOfPlaylist(playlistKey, index)}
               />
             ))}
           </ol>
-        </>
+        </section>
       )}
     </div>
   );

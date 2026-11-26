@@ -3,7 +3,7 @@
  *
  * Project identity (name, base path, colors) is NOT hard-coded here: it comes from
  * app.config.json so that one file controls the web app, the catalog script and the
- * Android wrapper. See docs/ARCHITECTURE.md.
+ * Android wrapper. See docs/sviluppo/architettura.md.
  */
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -11,7 +11,7 @@ import { defineConfig } from 'vitest/config';
 import appConfig from './app.config.json' with { type: 'json' };
 import pkg from './package.json' with { type: 'json' };
 
-const BACKGROUND_COLOR = '#12101c';
+const BACKGROUND_COLOR = '#0d0a1f';
 
 export default defineConfig({
   base: appConfig.basePath,
@@ -50,16 +50,23 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // Fonts: only the Latin subsets are precached; others load on demand if ever needed.
+        globPatterns: ['**/*.{js,css,html,svg,png}', '**/*latin*.woff2'],
         // The catalog is data, not app shell: it is cached at runtime instead (see below).
         globIgnores: ['catalog/**'],
         navigateFallback: 'index.html',
         runtimeCaching: [
           {
             // Public playlist catalog generated at deploy time (public/catalog/*.json).
+            // Network first: online users always get the latest catalog; the cached copy
+            // is used only offline or when the network is slower than 4 seconds.
             urlPattern: ({ url }) => url.pathname.includes('/catalog/'),
-            handler: 'StaleWhileRevalidate',
-            options: { cacheName: 'catalog', expiration: { maxEntries: 300 } },
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'catalog',
+              networkTimeoutSeconds: 4,
+              expiration: { maxEntries: 300 },
+            },
           },
           {
             // Video and playlist thumbnails.
@@ -76,7 +83,7 @@ export default defineConfig({
     }),
   ],
   test: {
-    include: ['src/**/*.test.ts', 'scripts/**/*.test.ts'],
+    include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.ts'],
     environment: 'node',
   },
 });
