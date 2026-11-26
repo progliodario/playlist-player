@@ -25,7 +25,8 @@ android {
 
     defaultConfig {
         applicationId appConfig.android.applicationId
-        minSdk 23
+        // android-browser-helper 2.8.0 requires Android 7.0 (API 24) or newer.
+        minSdk 24
         targetSdk 36
         versionCode appConfig.android.versionCode as int
         versionName appConfig.android.versionName

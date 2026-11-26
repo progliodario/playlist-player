@@ -22,7 +22,8 @@ L'APK è una **Trusted Web Activity (TWA)**: un piccolo launcher (libreria uffic
 | `android/build.gradle`                                     | Versione dell'Android Gradle Plugin                              |
 | `.github/workflows/android.yml`                            | Build in CI e pubblicazione della Release                        |
 
-Versioni: Android Gradle Plugin 8.13.2, Gradle 8.14.3, JDK 17, compileSdk/targetSdk 36, minSdk 23.
+Versioni: Android Gradle Plugin 8.13.2, Gradle 8.14.3, JDK 17, compileSdk/targetSdk 36, minSdk 24 (Android 7.0 o successivo, richiesto da
+android-browser-helper).
 
 ## Pubblicare un nuovo APK
 
