@@ -5,6 +5,14 @@ Tutte le modifiche rilevanti, dalla più recente. Formato ispirato a
 
 ## [Non rilasciato]
 
+## [1.1.1] — 2026-11-26
+
+### Corretto
+
+- Gli aggiornamenti dell'app arrivano subito: prima la nuova versione restava in attesa finché
+  non si chiudevano tutte le finestre dell'app. L'app aperta a lungo controlla anche ogni 30
+  minuti se c'è una versione nuova.
+
 ## [1.1.0] — 2026-11-26
 
 ### Aggiunto
