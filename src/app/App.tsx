@@ -25,6 +25,7 @@ import { SettingsView } from '../ui/views/SettingsView.tsx';
 import {
   useDocumentTitleEffect,
   useKeyboardShortcuts,
+  useMediaSessionEffect,
   useLanguageEffect,
   useLibraryLoader,
   useOnline,
@@ -52,6 +53,7 @@ export function App() {
   useRouteFocus(routeId);
   useTrackAnnouncements();
   useKeyboardShortcuts();
+  useMediaSessionEffect();
   useLibraryLoader();
 
   return (

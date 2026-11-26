@@ -5,3 +5,7 @@ node_modules/
 public/catalog/
 android/
 package-lock.json
+desktop/node_modules/
+desktop/dist/
+desktop/generated/
+desktop/package-lock.json

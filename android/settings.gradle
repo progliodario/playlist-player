@@ -1,4 +1,5 @@
-// Android wrapper (Trusted Web Activity) for the web app. See docs/sviluppo/android.md.
+// Android app: Trusted Web Activity for the web app + native ad-free player.
+// See docs/sviluppo/android.md.
 pluginManagement {
     repositories {
         google()
@@ -12,6 +13,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // NewPipeExtractor (native player) is published only on JitPack.
+        maven {
+            url 'https://jitpack.io'
+            content { includeGroup 'com.github.TeamNewPipe' }
+        }
     }
 }
 

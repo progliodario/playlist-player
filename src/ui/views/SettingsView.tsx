@@ -8,6 +8,8 @@ import {
 import { promptInstall, useInstallStore } from '../../app/pwa.ts';
 import { APP_VERSION, appConfig, BUILD_TIME } from '../../config/app-config.ts';
 import { formatDate, formatDateTime, useStrings } from '../../i18n/index.ts';
+import { getDesktopBridge, getShell } from '../../platform/shell.ts';
+import { playbackTarget } from '../../player/player-engine.ts';
 import { useAuthStore } from '../../sources/account/auth-store.ts';
 import { preloadGoogleIdentity } from '../../sources/account/google-auth.ts';
 import { useLibraryStore } from '../../state/library-store.ts';
@@ -15,6 +17,7 @@ import {
   useOAuthClientId,
   useSettingsStore,
   type LanguageSetting,
+  type PlaybackMode,
   type ThemeSetting,
 } from '../../state/settings-store.ts';
 import { showToast } from '../../state/toast-store.ts';
@@ -24,6 +27,7 @@ import { Icon, type IconName } from '../icons.tsx';
 
 const DOCS_URL = `${appConfig.repositoryUrl}/blob/main/docs`;
 const YOUTUBE_SIGN_IN_URL = 'https://accounts.google.com/ServiceLogin?service=youtube';
+const RELEASES_URL = `${appConfig.repositoryUrl}/releases/latest`;
 
 /** Settings page: one card per topic, each with its own h2. */
 export function SettingsView() {
@@ -215,16 +219,65 @@ function AccountSection() {
   );
 }
 
+/**
+ * Ads and background listening. Browsers can only use the YouTube player; the Android
+ * and Windows apps have their own ad-free player (src/player/player-engine.ts).
+ */
 function ListeningSection() {
   const t = useStrings();
+  const shell = getShell();
+  const mode = useSettingsStore((s) => s.playbackMode);
+  const setMode = useSettingsStore((s) => s.setPlaybackMode);
+  const helpId = useId();
+
+  if (shell === 'web') {
+    return (
+      <SettingsCard title={t.settings.listening} icon="headphones">
+        <p>{t.settings.listeningWeb}</p>
+        <ExternalLink className="button button--primary" href={RELEASES_URL}>
+          <Icon name="external" size={16} /> {t.settings.downloadApps}
+        </ExternalLink>
+        <p className="muted">{t.settings.listeningPremium}</p>
+        <ExternalLink className="chip-link" href={YOUTUBE_SIGN_IN_URL}>
+          <Icon name="external" size={16} /> {t.settings.signInYouTube}
+        </ExternalLink>
+      </SettingsCard>
+    );
+  }
+
+  // The engine is chosen at startup: a new choice applies after a reload.
+  const activeMode: PlaybackMode = playbackTarget === 'youtube' ? 'youtube' : 'ad-free';
   return (
     <SettingsCard title={t.settings.listening} icon="headphones">
-      <p>{t.settings.listeningIntro}</p>
-      <p className="muted">{t.settings.listeningPremium}</p>
-      <p className="muted">{t.settings.listeningBackground}</p>
-      <ExternalLink className="chip-link" href={YOUTUBE_SIGN_IN_URL}>
-        <Icon name="external" size={16} /> {t.settings.signInYouTube}
-      </ExternalLink>
+      <div className="settings-row">
+        <span aria-hidden="true">{t.settings.playbackMode}</span>
+        <SegmentedControl<PlaybackMode>
+          label={t.settings.playbackMode}
+          value={mode}
+          onChange={setMode}
+          options={[
+            { value: 'ad-free', label: t.settings.playbackAdFree },
+            { value: 'youtube', label: t.settings.playbackYouTube },
+          ]}
+        />
+      </div>
+      <p id={helpId} className="muted">
+        {shell === 'android' ? t.settings.playbackHelpAndroid : t.settings.playbackHelpDesktop}
+      </p>
+      {mode !== activeMode && (
+        <div className="settings-apply" role="status">
+          <p>{t.settings.playbackPending}</p>
+          <button
+            type="button"
+            className="button button--primary"
+            aria-describedby={helpId}
+            onClick={() => window.location.reload()}
+          >
+            {t.settings.playbackApply}
+          </button>
+        </div>
+      )}
+      {mode === 'youtube' && <p className="muted">{t.settings.listeningPremium}</p>}
     </SettingsCard>
   );
 }
@@ -350,7 +403,11 @@ function InstallSection() {
   const isInstalled = useInstallStore((s) => s.isInstalled);
   return (
     <SettingsCard title={t.settings.install} icon="plus">
-      {isInstalled ? (
+      {getShell() === 'desktop' ? (
+        <p>{t.settings.runningDesktop(getDesktopBridge()?.version ?? '')}</p>
+      ) : getShell() === 'android' ? (
+        <p>{t.settings.runningAndroid}</p>
+      ) : isInstalled ? (
         <p>{t.settings.installed}</p>
       ) : (
         <>
@@ -367,9 +424,7 @@ function InstallSection() {
           <p className="muted">{t.settings.installAndroid}</p>
         </>
       )}
-      <ExternalLink href={`${appConfig.repositoryUrl}/releases/latest`}>
-        {t.settings.releasesLink}
-      </ExternalLink>
+      <ExternalLink href={RELEASES_URL}>{t.settings.releasesLink}</ExternalLink>
     </SettingsCard>
   );
 }

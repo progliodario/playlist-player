@@ -12,6 +12,12 @@ export type LanguageSetting = 'auto' | 'it' | 'en';
 export type ThemeSetting = 'auto' | 'dark' | 'light';
 export type LibraryFilter = 'all' | 'music' | 'video';
 export type LibrarySort = 'default' | 'title' | 'size' | 'recent';
+/**
+ * Player used inside the Android and Windows apps (browsers always use YouTube's):
+ * "ad-free" = the app's own player (no ads, keeps playing in the background),
+ * "youtube" = the official YouTube player (fallback if YouTube changes break the other).
+ */
+export type PlaybackMode = 'ad-free' | 'youtube';
 
 /** A playlist the user added by link (source "manual"). */
 export interface ManualPlaylistEntry {
@@ -37,6 +43,7 @@ interface SettingsState {
   librarySort: LibrarySort;
   /** Single-key keyboard shortcuts (WCAG 2.1.4: users must be able to turn them off). */
   keyboardShortcuts: boolean;
+  playbackMode: PlaybackMode;
 
   setLanguage(language: LanguageSetting): void;
   setTheme(theme: ThemeSetting): void;
@@ -48,6 +55,7 @@ interface SettingsState {
   setLibraryFilter(filter: LibraryFilter): void;
   setLibrarySort(sort: LibrarySort): void;
   setKeyboardShortcuts(enabled: boolean): void;
+  setPlaybackMode(mode: PlaybackMode): void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -61,6 +69,7 @@ export const useSettingsStore = create<SettingsState>()(
       libraryFilter: 'all',
       librarySort: 'default',
       keyboardShortcuts: true,
+      playbackMode: 'ad-free',
 
       setLanguage: (language) => set({ language }),
       setTheme: (theme) => set({ theme }),
@@ -85,11 +94,14 @@ export const useSettingsStore = create<SettingsState>()(
       setLibraryFilter: (libraryFilter) => set({ libraryFilter }),
       setLibrarySort: (librarySort) => set({ librarySort }),
       setKeyboardShortcuts: (keyboardShortcuts) => set({ keyboardShortcuts }),
+      setPlaybackMode: (playbackMode) => set({ playbackMode }),
     }),
     {
       name: STORAGE_KEYS.settings,
-      version: 1,
+      // v2: added playbackMode (missing in v1 data, the default applies).
+      version: 2,
       storage: createJSONStorage(() => localStorage),
+      migrate: (persisted) => persisted as SettingsState,
     },
   ),
 );

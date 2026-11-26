@@ -106,12 +106,43 @@
 }
 
 .player-viewport__host,
-.player-viewport__host iframe {
+.player-viewport__host iframe,
+.player-viewport__media {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+/* Ad-free player of the Windows app (<video>): music shows the cover, filling the box. */
+.player-viewport__media {
+  object-fit: contain;
+  background: var(--vinyl-disc);
+}
+
+/* Music: no picture, the cover (set as background by the engine) fills the box. */
+.player-viewport__media.is-audio {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Android app: the native player plays, the web panel only links to it. */
+.now-playing--native .player-viewport {
+  display: none;
+}
+
+.native-player-notice {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+
+.native-player-notice__hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
 }
 
 /* Shown only before the first play after a reload (never over a playing video). */

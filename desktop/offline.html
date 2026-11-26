@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Playlist Player – nessuna connessione</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: system-ui, sans-serif;
+        background: #0d0a1f;
+        color: #f8f4ff;
+        text-align: center;
+        padding: 1rem;
+      }
+      button {
+        font: inherit;
+        padding: 0.7rem 1.4rem;
+        border: 0;
+        border-radius: 999px;
+        background: #ff6aa8;
+        color: #1b0b24;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      button:focus-visible {
+        outline: 3px solid #ffe36e;
+        outline-offset: 3px;
+      }
+      p {
+        color: #cfc6ee;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Nessuna connessione</h1>
+      <p>La prima apertura dell'app richiede internet. Controlla la connessione e riprova.</p>
+      <p lang="en">The app needs internet the first time it opens.</p>
+      <button type="button" id="retry">Riprova</button>
+    </main>
+    <script>
+      const target = new URLSearchParams(location.search).get('retry');
+      document.getElementById('retry').addEventListener('click', () => {
+        if (target) location.href = target;
+      });
+    </script>
+  </body>
+</html>

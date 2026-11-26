@@ -6,6 +6,8 @@
 import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { appConfig } from '../config/app-config.ts';
 import { getStrings, resolveLanguage, useStrings } from '../i18n/index.ts';
+import { videoThumbnailUrl } from '../domain/youtube-urls.ts';
+import { playbackTarget } from '../player/player-engine.ts';
 import { useCurrentTrack, usePlayerStore } from '../player/player-store.ts';
 import { useAuthStore } from '../sources/account/auth-store.ts';
 import { announce } from '../state/announcer-store.ts';
@@ -87,6 +89,65 @@ export function useTrackAnnouncements(): void {
     lastAnnounced.current = track.videoId;
     announce(t.player.nowPlayingAnnouncement(track.title, trackSubtitle(track)));
   }, [track, playing, t]);
+}
+
+/**
+ * Media Session for the Windows app's own player: title and cover in the Windows media
+ * flyout, keyboard media keys, Bluetooth buttons. (The YouTube iframe manages its own.)
+ */
+export function useMediaSessionEffect(): void {
+  const track = useCurrentTrack();
+  const playing = usePlayerStore((s) => s.playIntent);
+  const album = usePlayerStore((s) => s.queue?.sourceTitle ?? '');
+  const enabled = playbackTarget === 'stream' && 'mediaSession' in navigator;
+
+  useEffect(() => {
+    if (!enabled) return;
+    navigator.mediaSession.metadata = track
+      ? new MediaMetadata({
+          title: track.title || track.videoId,
+          artist: trackSubtitle(track),
+          album,
+          artwork: [
+            { src: videoThumbnailUrl(track.videoId, 'hq'), sizes: '480x360', type: 'image/jpeg' },
+          ],
+        })
+      : null;
+  }, [enabled, track, album]);
+
+  useEffect(() => {
+    if (enabled) navigator.mediaSession.playbackState = playing ? 'playing' : 'paused';
+  }, [enabled, playing]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const player = () => usePlayerStore.getState();
+    const handlers: [MediaSessionAction, MediaSessionActionHandler][] = [
+      ['play', () => !player().playIntent && player().togglePlay()],
+      ['pause', () => player().playIntent && player().togglePlay()],
+      ['previoustrack', () => player().previous()],
+      ['nexttrack', () => player().next()],
+      ['seekbackward', (details) => player().seekBy(-(details.seekOffset ?? 10))],
+      ['seekforward', (details) => player().seekBy(details.seekOffset ?? 10)],
+      ['seekto', (details) => details.seekTime !== undefined && player().seek(details.seekTime)],
+    ];
+    for (const [action, handler] of handlers) {
+      try {
+        navigator.mediaSession.setActionHandler(action, handler);
+      } catch {
+        // action not supported by this browser
+      }
+    }
+    return () => {
+      for (const [action] of handlers) {
+        try {
+          navigator.mediaSession.setActionHandler(action, null);
+        } catch {
+          // ignore
+        }
+      }
+    };
+  }, [enabled]);
 }
 
 /**

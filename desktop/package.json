@@ -1,0 +1,23 @@
+{
+  "name": "playlist-player-desktop",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Windows app of Playlist Player: the web app with an ad-free player that keeps playing in the background.",
+  "license": "MIT",
+  "author": "progliodario",
+  "main": "main/main.cjs",
+  "scripts": {
+    "prepare-build": "node scripts/prepare.cjs",
+    "start": "node scripts/prepare.cjs && electron .",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test \"main/**/*.test.cjs\"",
+    "check": "npm run typecheck && npm run test",
+    "dist": "node scripts/prepare.cjs && electron-builder --config electron-builder.config.cjs --win --publish never"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.4",
+    "electron": "45.5.0",
+    "electron-builder": "26.18.0",
+    "typescript": "6.0.3"
+  }
+}

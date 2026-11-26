@@ -3,7 +3,11 @@
  * client (implicit flow, no backend). Read-only YouTube scope.
  *
  * Setup (one time, by the repository owner): docs/sviluppo/account-google.md
+ *
+ * In the Windows app Google does not allow signing in inside the app window, so the
+ * desktop app opens the system browser instead (desktop/main/google-sign-in.cjs).
  */
+import { getDesktopBridge } from '../../platform/shell.ts';
 import { loadScript } from '../../utils/load-script.ts';
 
 const GIS_SCRIPT_URL = 'https://accounts.google.com/gsi/client';
@@ -27,6 +31,11 @@ export async function requestAccessToken(
   clientId: string,
   prompt: '' | 'consent' | 'select_account' = '',
 ): Promise<AccessToken> {
+  const desktop = getDesktopBridge();
+  if (desktop) {
+    const token = await desktop.signIn({ clientId, scope: YOUTUBE_READONLY_SCOPE, prompt });
+    return { value: token.accessToken, expiresAt: Date.now() + token.expiresIn * 1000 };
+  }
   await preloadGoogleIdentity();
   return new Promise<AccessToken>((resolve, reject) => {
     const client = google.accounts.oauth2.initTokenClient({

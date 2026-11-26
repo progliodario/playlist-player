@@ -2,15 +2,16 @@ import { useEffect, useRef } from 'react';
 import { videoThumbnailUrl } from '../../domain/youtube-urls.ts';
 import { useStrings } from '../../i18n/index.ts';
 import { useCurrentTrack, usePlayerStore } from '../../player/player-store.ts';
-import { playerEngine } from '../../player/youtube-player-engine.ts';
+import { playerEngine } from '../../player/player-engine.ts';
 import { Icon } from '../icons.tsx';
 
 /**
- * Box that hosts the YouTube iframe.
+ * Box that hosts the player element: the YouTube iframe, or the <video> of the
+ * Windows app's ad-free player (see src/player/player-engine.ts).
  *
  * IMPORTANT: this component must be rendered exactly once and never unmounted
  * (moving or re-creating an iframe reloads the video). Layout changes are CSS-only.
- * YouTube policy: keep it visible and at least 200x200 px while playing.
+ * YouTube player policy: keep it visible and at least 200x200 px while playing.
  */
 export function PlayerViewport() {
   const t = useStrings();

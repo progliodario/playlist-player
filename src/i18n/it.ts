@@ -136,6 +136,9 @@ export const it = {
       artist ? `In riproduzione: ${title}, di ${artist}` : `In riproduzione: ${title}`,
     iframeTitle: (title: string) => `Video YouTube: ${title}`,
     iframeTitleIdle: 'Player YouTube',
+    nativeHint:
+      'Suona nel lettore dell’app: senza pubblicità, anche a schermo spento, con i comandi nella schermata di blocco.',
+    openNativePlayer: 'Apri il lettore',
   },
 
   settings: {
@@ -165,14 +168,22 @@ export const it = {
     clientIdHelp: 'Lascia vuoto per usare quello del progetto.',
     save: 'Salva',
 
-    listening: 'Pubblicità e ascolto a schermo spento',
-    listeningIntro:
-      'I video sono riprodotti dal player ufficiale di YouTube, come richiedono le regole di YouTube: l’app non può togliere le pubblicità né suonare con il player nascosto.',
+    listening: 'Pubblicità e ascolto in background',
+    listeningWeb:
+      'In un browser una pagina può usare solo il player di YouTube: con le sue pubblicità e solo finché la pagina è visibile. Le app per Android e per Windows hanno un lettore proprio, senza pubblicità, che continua a suonare a schermo spento o con la finestra ridotta a icona.',
+    downloadApps: 'Scarica le app (Android e Windows)',
     listeningPremium:
-      'Con YouTube Premium (o YouTube Music Premium) le pubblicità spariscono anche qui: basta aver fatto l’accesso a YouTube con lo stesso account in questo browser.',
-    listeningBackground:
-      'Per ascoltare a schermo spento usa il pulsante “Apri in YouTube Music” nel lettore: l’app ufficiale, con Premium, continua a suonare in background.',
+      'Con il player di YouTube le pubblicità spariscono solo con YouTube Premium, se hai fatto l’accesso a YouTube con lo stesso account in questo browser.',
     signInYouTube: 'Accedi a YouTube in questo browser',
+    playbackMode: 'Lettore',
+    playbackAdFree: 'Senza pubblicità',
+    playbackYouTube: 'Player di YouTube',
+    playbackHelpAndroid:
+      'Senza pubblicità: niente annunci, continua a schermo spento, comandi nella schermata di blocco e nelle cuffie Bluetooth. Se un giorno non funziona (YouTube cambia spesso), scegli “Player di YouTube” finché non esce una nuova versione dell’app.',
+    playbackHelpDesktop:
+      'Senza pubblicità: niente annunci, continua con la finestra ridotta a icona, tasti multimediali e comandi di Windows. Il componente che legge YouTube (yt-dlp) si aggiorna da solo; se un giorno non funziona, scegli “Player di YouTube”.',
+    playbackPending: 'Il nuovo lettore si attiva dopo aver ricaricato l’app.',
+    playbackApply: 'Ricarica e applica',
 
     shortcuts: 'Scorciatoie da tastiera',
     shortcutsToggle: 'Attiva le scorciatoie a un tasto',
@@ -206,17 +217,19 @@ export const it = {
     installButton: 'Installa',
     installed: 'L’app è installata su questo dispositivo.',
     installWindows:
-      'Windows: apri questa pagina con Edge o Chrome, poi menu ⋯ → "Installa questo sito come app".',
+      'Windows: scarica e apri playlist-player-setup.exe dalla pagina Releases (lettore senza pubblicità). In alternativa: Edge o Chrome → menu ⋯ → "Installa questo sito come app".',
     installAndroid:
-      'Android: scarica l’APK dalla pagina Releases del progetto, oppure in Chrome menu ⋮ → "Installa app".',
-    releasesLink: 'Pagina Releases (APK Android)',
+      'Android: scarica e installa l’APK dalla pagina Releases (lettore senza pubblicità, anche a schermo spento).',
+    releasesLink: 'Pagina Releases (app Android e Windows)',
+    runningDesktop: (version: string) => `Stai usando l’app per Windows, versione ${version}.`,
+    runningAndroid: 'Stai usando l’app per Android.',
 
     about: 'Informazioni',
     version: (version: string, date: string) => `Versione ${version} · build del ${date}`,
     sourceCode: 'Codice sorgente su GitHub',
     accessibility: 'Dichiarazione di accessibilità',
     disclaimer:
-      'App non ufficiale, non affiliata a YouTube o Google. I video sono riprodotti con il player ufficiale di YouTube.',
+      'App non ufficiale, non affiliata a YouTube o Google. I contenuti restano su YouTube: l’app non scarica né conserva video.',
     clearData: 'Cancella dati locali',
     clearDataConfirm:
       'Cancellare impostazioni, coda e playlist aggiunte su questo dispositivo? L’operazione non si può annullare.',

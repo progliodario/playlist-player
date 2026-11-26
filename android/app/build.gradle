@@ -1,19 +1,28 @@
 /*
- * Android app = a Trusted Web Activity (TWA): a thin launcher that opens the deployed web
- * app full screen in Chrome. There is no app logic here; everything lives in src/.
+ * Android app, two parts (docs/sviluppo/android.md):
+ *  - a Trusted Web Activity (TWA): opens the deployed web app full screen in Chrome;
+ *  - a native ad-free player (src/main/java/.../player/): the web app hands it the queue,
+ *    it plays with the screen off (Media3 + NewPipeExtractor).
  *
  * Identity (name, URL, package id, version, colors) is read from ../../app.config.json so
- * the web app and the Android app never drift apart. See docs/sviluppo/android.md.
+ * the web app and the Android app never drift apart.
+ *
+ * License: NewPipeExtractor is GPL-3.0, so the APK (and this android/ folder) is
+ * distributed under GPL-3.0-or-later (android/LICENSE). The rest of the repository is MIT.
  */
 import groovy.json.JsonSlurper
 
 plugins {
     id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.compose'
 }
 
 def appConfig = new JsonSlurper().parse(rootProject.file('../app.config.json'))
 def publicUrl = new URI(appConfig.publicUrl as String)
 def host = publicUrl.host
+// "?shell=android" tells the web app it runs inside this app (src/platform/shell.ts).
+def launchUrl = "${appConfig.publicUrl}?shell=android"
 
 // Release signing comes from environment variables (set by CI from GitHub secrets).
 // Without them the release build is signed with the debug key (fine for local tests).
@@ -33,7 +42,7 @@ android {
 
         manifestPlaceholders = [
             hostName : host,
-            launchUrl: appConfig.publicUrl,
+            launchUrl: launchUrl,
         ]
 
         resValue 'string', 'app_name', appConfig.appName
@@ -58,6 +67,7 @@ android {
 
     buildTypes {
         release {
+            // No code shrinking: NewPipeExtractor and Rhino use reflection.
             minifyEnabled false
             signingConfig keystorePath ? signingConfigs.release : signingConfigs.debug
         }
@@ -66,15 +76,65 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+        // NewPipeExtractor uses Java APIs missing on old Android versions.
+        coreLibraryDesugaringEnabled true
     }
 
     buildFeatures {
+        compose true
         resValues true
+    }
+
+    packaging {
+        resources {
+            excludes += ['META-INF/{AL2.0,LGPL2.1}', 'META-INF/DEPENDENCIES', 'META-INF/LICENSE*',
+                         'META-INF/NOTICE*', 'META-INF/*.kotlin_module']
+        }
+    }
+
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+        }
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
+}
+
+// Versions are pinned and chosen to work with compileSdk 36 / AGP 8 (decision 0010):
+// newer AndroidX releases (androidx.core 1.19+, Compose BOM 2026.11+) need compileSdk 37.
 dependencies {
-    // https://github.com/GoogleChrome/android-browser-helper
+    // Trusted Web Activity: https://github.com/GoogleChrome/android-browser-helper
     implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.8.0'
     implementation 'androidx.appcompat:appcompat:1.8.0'
+    implementation 'androidx.core:core-ktx:1.17.0'
+
+    // Native player: playback, background session, HLS video, OkHttp networking
+    implementation 'androidx.media3:media3-exoplayer:1.11.1'
+    implementation 'androidx.media3:media3-exoplayer-hls:1.11.1'
+    implementation 'androidx.media3:media3-session:1.11.1'
+    implementation 'androidx.media3:media3-ui:1.11.1'
+    implementation 'androidx.media3:media3-datasource-okhttp:1.11.1'
+    implementation 'com.squareup.okhttp3:okhttp:5.5.1'
+    // Finds YouTube streams: https://github.com/TeamNewPipe/NewPipeExtractor (GPL-3.0)
+    implementation 'com.github.TeamNewPipe:NewPipeExtractor:v0.27.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0'
+
+    // Player screen (Jetpack Compose) and images
+    implementation platform('androidx.compose:compose-bom:2026.09.00')
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.foundation:foundation'
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.activity:activity-compose:1.12.0'
+    implementation 'io.coil-kt.coil3:coil-compose:3.6.3'
+    implementation 'io.coil-kt.coil3:coil-network-okhttp:3.6.3'
+
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs_nio:2.1.5'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.json:json:20260814'
 }
