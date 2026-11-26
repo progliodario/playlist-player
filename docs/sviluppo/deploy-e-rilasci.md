@@ -7,12 +7,13 @@ Release.
 
 ## Workflow
 
-| Workflow (file)                           | Quando parte                                 | Cosa fa                                                                                    |
-| ----------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **CI** (`ci.yml`)                         | ogni push e pull request                     | `npm run check` (tipi, lint, formattazione, test) + build                                  |
-| **Deploy to GitHub Pages** (`deploy.yml`) | push su `main`, ogni 15 minuti, manuale      | genera il catalogo; se è cambiato (o non è un controllo programmato) build e pubblicazione |
-| **Android APK** (`android.yml`)           | tag `v*`, PR che toccano `android/`, manuale | test, build e firma dell'APK; con un tag lo allega alla Release                            |
-| **Windows app** (`desktop.yml`)           | tag `v*`, PR che toccano `desktop/`, manuale | tipi, test e installer `playlist-player-setup.exe`; con un tag lo allega alla Release      |
+| Workflow (file)                              | Quando parte                                 | Cosa fa                                                                                    |
+| -------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **CI** (`ci.yml`)                            | ogni push e pull request                     | `npm run check` (tipi, lint, formattazione, test) + build                                  |
+| **Deploy to GitHub Pages** (`deploy.yml`)    | push su `main`, ogni 15 minuti, manuale      | genera il catalogo; se è cambiato (o non è un controllo programmato) build e pubblicazione |
+| **Android APK** (`android.yml`)              | tag `v*`, PR che toccano `android/`, manuale | test, build e firma dell'APK; con un tag lo allega alla Release                            |
+| **Android smoke test** (`android-smoke.yml`) | PR che toccano `android/`, manuale           | apre app e lettore su emulatori Android 12/14/16; fallisce se l'app si chiude              |
+| **Windows app** (`desktop.yml`)              | tag `v*`, PR che toccano `desktop/`, manuale | tipi, test e installer `playlist-player-setup.exe`; con un tag lo allega alla Release      |
 
 Esecuzione manuale: tab **Actions** → scegli il workflow → **Run workflow**.
 
@@ -44,7 +45,8 @@ errori. Se succede spesso, aumenta l'intervallo nel `cron` di `deploy.yml`.
    - `package.json` → `version`
    - `app.config.json` → `android.versionName` e `android.versionCode` (+1)
 2. Aggiungi la sezione della versione in `CHANGELOG.md`.
-3. `npm run check`, commit, push su `main` → il sito si aggiorna.
+3. `npm run check`, commit, push su `main` → il sito si aggiorna. Se hai toccato `android/`, la
+   PR deve avere verde anche **Android smoke test** (l'app si apre senza chiudersi).
 4. App: `git tag vX.Y.Z` e `git push origin vX.Y.Z` → Release con l'APK e l'installer Windows.
    I workflow verificano che il tag corrisponda a `android.versionName` e a `package.json`.
 

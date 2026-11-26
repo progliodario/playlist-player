@@ -1,4 +1,4 @@
-# Opens the Android app on emulators (old and new Android) and fails if it crashes
+# Opens the Android app on emulators (Android 12, 14 and 16) and fails if it crashes
 # (android/scripts/smoke-test.sh): catches "Playlist Player keeps stopping" before a release.
 #
 #  - pull request touching android/ -> builds the APK and tests it
@@ -21,6 +21,11 @@ on:
 permissions:
   contents: read
 
+# A new push to the same PR cancels the older run.
+concurrency:
+  group: android-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   smoke:
     runs-on: ubuntu-latest
@@ -28,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        api-level: [30, 34, 36]
+        api-level: [31, 34, 36]
     steps:
       - uses: actions/checkout@v7
 
@@ -70,6 +75,7 @@ jobs:
           target: google_apis_playstore
           arch: x86_64
           disable-animations: true
+          emulator-boot-timeout: 900
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: bash android/scripts/smoke-test.sh app.apk smoke-output
 

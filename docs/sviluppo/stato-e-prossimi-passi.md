@@ -4,7 +4,7 @@
 verificato, i limiti noti, la manutenzione da fare e le idee per il futuro. Aggiorna questo file
 quando chiudi o apri uno di questi punti.
 
-Ultimo aggiornamento: 26 novembre 2026, versione 1.3.0.
+Ultimo aggiornamento: 26 novembre 2026, versione 1.3.1.
 
 ## Riprendere il lavoro in 5 minuti
 
@@ -25,13 +25,15 @@ Ultimo aggiornamento: 26 novembre 2026, versione 1.3.0.
 | Accesso con Google (sito)                        | Confermato dal proprietario                                                                                                      |
 | App Windows: lettore senza pubblicità            | Provata su questo computer, anche impacchettata: play, ricerca nel brano, successivo, pausa, video HLS 1080p, tasti multimediali |
 | App Android: compilazione e firma                | CI: test unitari, APK firmato con la chiave di sempre, Digital Asset Links validi                                                |
+| App Android: si apre senza chiudersi             | CI (**Android smoke test**): emulatori Android 12, 14 e 16 con Chrome, app + lettore nativo + background                         |
 | Sito che si aggiorna da solo                     | Il service worker attiva la nuova versione senza chiudere l'app                                                                  |
 
 ## Non ancora verificato
 
-- **Lettore nativo Android su un telefono vero**: compila e la parte che trova gli stream
-  (NewPipeExtractor) è stata provata su computer, ma la prima prova reale l'ha fatta il
-  proprietario. Se qualcosa non va: `adb logcat` mentre si riproduce, oppure Impostazioni →
+- **Lettore nativo Android su un telefono vero**: si apre senza errori sugli emulatori e la parte
+  che trova gli stream (NewPipeExtractor) è stata provata su computer, ma l'audio vero su un
+  telefono non è ancora confermato (la 1.3.0 si chiudeva all'avvio, corretto nella 1.3.1). Se
+  qualcosa non va: `android/scripts/smoke-test.sh` con il telefono collegato, oppure Impostazioni →
   Lettore → "Player di YouTube".
 - **Accesso con Google nell'app Windows** fino in fondo (serve l'account del proprietario): è
   verificato solo che Google accetta l'indirizzo di ritorno `http://127.0.0.1:43117/callback`.
