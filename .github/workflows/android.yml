@@ -1,4 +1,4 @@
-# Builds the Android APK (Trusted Web Activity wrapper, see docs/ANDROID.md).
+# Builds the Android APK (Trusted Web Activity wrapper, see docs/sviluppo/android.md).
 #
 #  - push of a tag "vX.Y.Z" -> builds and publishes a GitHub Release with the APK
 #    (the tag must match android.versionName in app.config.json)
@@ -96,7 +96,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          NOTES="Installazione su Android: scarica il file .apk qui sotto, aprilo e consenti l'installazione da questa fonte. Serve Google Chrome. Dettagli: docs/ANDROID.md"
+          NOTES="Installazione su Android: scarica il file .apk qui sotto, aprilo e consenti l'installazione da questa fonte. Serve Google Chrome. Dettagli: docs/sviluppo/android.md"
           if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" playlist-player-*.apk --clobber
           else

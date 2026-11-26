@@ -1,5 +1,5 @@
 # Monthly dependency update pull requests. CI must pass before merging them.
-# Major upgrades listed under `ignore` need a deliberate migration: see docs/DECISIONS.md.
+# Major upgrades listed under `ignore` need a deliberate migration: see docs/decisioni/
 version: 2
 updates:
   - package-ecosystem: npm
@@ -10,7 +10,7 @@ updates:
       npm-minor-and-patch:
         update-types: [minor, patch]
     ignore:
-      # typescript-eslint does not support TypeScript 7 yet (D7).
+      # typescript-eslint does not support TypeScript 7 yet (docs/decisioni/0007-typescript-6.md).
       - dependency-name: typescript
         update-types: [version-update:semver-major]
       # Types must match the Node major used by the project (.nvmrc).
@@ -28,6 +28,6 @@ updates:
       interval: monthly
     ignore:
       # A new Android Gradle Plugin major also needs a new Gradle version in
-      # .github/workflows/android.yml and possibly build script changes (D10).
+      # .github/workflows/android.yml and possibly build script changes (docs/decisioni/0010-agp-8.md).
       - dependency-name: com.android.application
         update-types: [version-update:semver-major]

@@ -3,7 +3,7 @@
  * app full screen in Chrome. There is no app logic here; everything lives in src/.
  *
  * Identity (name, URL, package id, version, colors) is read from ../../app.config.json so
- * the web app and the Android app never drift apart. See docs/ANDROID.md.
+ * the web app and the Android app never drift apart. See docs/sviluppo/android.md.
  */
 import groovy.json.JsonSlurper
 
@@ -39,7 +39,7 @@ android {
         resValue 'string', 'app_name', appConfig.appName
         resValue 'color', 'brand_background', appConfig.themeColor
         // Digital Asset Links statement: lets Chrome verify that this app and the website
-        // belong together (hides the URL bar). See docs/ANDROID.md.
+        // belong together (hides the URL bar). See docs/sviluppo/android.md.
         resValue 'string', 'asset_statements',
             '[{\\"relation\\": [\\"delegate_permission/common.handle_all_urls\\"], ' +
             '\\"target\\": {\\"namespace\\": \\"web\\", \\"site\\": \\"https://' + host + '\\"}}]'

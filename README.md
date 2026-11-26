@@ -1,78 +1,59 @@
 # Playlist Player
 
 App per **Windows e Android** che mostra e riproduce le playlist YouTube del canale
-[@DarioProglio](https://www.youtube.com/@DarioProglio): sia **canzoni** sia **video**.
+[@DarioProglio](https://www.youtube.com/@DarioProglio): **canzoni** e **video**, con una grafica
+illustrata ("Notturno": cielo di notte, aurora, vinili) e accessibilità completa.
 
 **Apri l'app → https://progliodario.github.io/playlist-player/**
 
-- **Desktop**: tre colonne — menu, libreria/playlist, pannello "In riproduzione" con video e coda.
-- **Telefono**: player compatto in alto (quadrato per la musica, largo per i video), navigazione in basso.
-
 ## Installazione
 
-| Dispositivo | Come                                                                                                                                                                                                     |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Windows** | Apri il link sopra con **Edge** o **Chrome** → menu `⋯` → **Installa questo sito come app** (oppure l'icona di installazione nella barra degli indirizzi). Comparirà nel menu Start come un'app normale. |
-| **Android** | Scarica l'APK dall'ultima [Release](https://github.com/progliodario/playlist-player/releases/latest) e installalo. In alternativa apri il link con Chrome → menu `⋮` → **Installa app**.                 |
+| Dispositivo | Come                                                                                                                                                                           |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Windows** | Apri il link con **Edge** o **Chrome** → menu `⋯` → **Installa questo sito come app**. Compare nel menu Start come un'app normale.                                             |
+| **Android** | Scarica l'APK dall'ultima [Release](https://github.com/progliodario/playlist-player/releases/latest) e installalo (serve Chrome). Oppure Chrome → menu `⋮` → **Installa app**. |
 
-Guida dettagliata: [docs/INSTALL.md](docs/INSTALL.md).
+Dettagli: [docs/utente/installazione.md](docs/utente/installazione.md).
 
 ## Cosa fa
 
-- **Playlist del canale senza login**: tutte le playlist pubbliche di @DarioProglio, aggiornate
-  automaticamente ogni giorno.
-- **Musica e video**: ogni playlist viene riconosciuta come _musica_ o _video_ (si può cambiare a
-  mano) e l'interfaccia si adatta: copertina quadrata e lista brani per la musica, player largo
-  per i video.
-- **Riproduzione completa**: play/pausa, successivo/precedente, casuale, ripeti (coda o brano),
-  barra di avanzamento, volume, schermo intero, coda "Prossimi".
-- **Riprende da dove eri**: coda e posizione vengono ricordate anche chiudendo l'app.
-- **Aggiungi qualsiasi playlist** pubblica incollandone il link (anche di altri canali o di
-  YouTube Music).
-- **Account Google (facoltativo)**: con l'accesso si vedono anche playlist private, non in elenco
-  e i video piaciuti. Richiede una configurazione una tantum: [docs/GOOGLE-OAUTH-SETUP.md](docs/GOOGLE-OAUTH-SETUP.md).
-- Tema chiaro/scuro, italiano/inglese, funziona offline per la parte già visitata (PWA).
+- **Playlist del canale senza login**, sempre aggiornate: una playlist nuova o modificata su
+  YouTube compare nell'app entro ~15-20 minuti, anche con l'app aperta.
+- **Musica e video**: ogni playlist è riconosciuta come musica o video (modificabile); le
+  musicali sono custodie di disco con il vinile, le video hanno la cornice a pellicola.
+- **Lettore completo**: casuale, ripeti, avanzamento, volume, schermo intero, coda, ripresa da
+  dove eri rimasto, scorciatoie da tastiera, "Apri in YouTube Music".
+- **Aggiungi qualsiasi playlist pubblica** con il suo link (anche YouTube Music).
+- **Account Google (facoltativo)**: playlist private e video piaciuti, con un clic su "Accedi con
+  Google" una volta attivato ([docs/sviluppo/account-google.md](docs/sviluppo/account-google.md)).
+- **Accessibile** (WCAG 2.2 AA): tastiera, lettori di schermo, contrasti verificati, movimento
+  ridotto, contrasto elevato — [dichiarazione](docs/utente/accessibilita.md).
+- Temi **Notturno** e **Alba**, italiano e inglese, installabile e utilizzabile offline (PWA).
 
-### Scorciatoie da tastiera
+Guida all'uso: [docs/utente/guida.md](docs/utente/guida.md).
 
-| Tasto          | Azione        | Tasto     | Azione                  |
-| -------------- | ------------- | --------- | ----------------------- |
-| `Spazio` / `K` | Play / pausa  | `N` / `P` | Successivo / precedente |
-| `J` / `L`      | −10 s / +10 s | `M`       | Muto                    |
-| `S`            | Casuale       | `R`       | Ripeti                  |
+## Pubblicità e schermo spento
 
-## Limiti noti
+L'app usa il player ufficiale di YouTube e rispetta le sue regole, che vietano di bloccare le
+pubblicità e di riprodurre con il player nascosto. Con **YouTube Premium** le pubblicità spariscono
+anche qui (basta l'accesso a YouTube nello stesso browser) e il pulsante **Apri in YouTube Music**
+continua l'ascolto a schermo spento nell'app ufficiale.
+Dettagli: [docs/utente/domande-frequenti.md](docs/utente/domande-frequenti.md).
 
-- I video sono riprodotti con il **player ufficiale di YouTube**, che deve restare visibile (regole
-  di YouTube): niente riproduzione "solo audio" a schermo spento.
-- Alcuni video non permettono la riproduzione fuori da YouTube: vengono saltati automaticamente
-  e segnalati con un link per aprirli su YouTube.
-- Le playlist "salvate" di altri utenti e "Mi piace" di YouTube Music non sono esposte dalle API
-  di YouTube: si possono aggiungere con il link.
-
-## Per sviluppatori (e agenti AI)
+## Per sviluppatori e agenti AI
 
 ```powershell
 npm install
-npm run catalog   # facoltativo: scarica il catalogo playlist (serve yt-dlp)
-npm run dev       # http://localhost:5173/playlist-player/
-npm run check     # tipi + lint + formattazione + test
+npm run dev
 ```
 
-Da leggere prima di modificare il codice: **[AGENTS.md](AGENTS.md)** (mappa del progetto, regole,
-ricette per le modifiche più comuni).
+```powershell
+npm run check
+```
 
-| Documento                                                | Contenuto                                               |
-| -------------------------------------------------------- | ------------------------------------------------------- |
-| [AGENTS.md](AGENTS.md)                                   | Guida operativa per chi modifica il codice (umani e AI) |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)             | Struttura, flusso dei dati, stato, player               |
-| [docs/DATA-SOURCES.md](docs/DATA-SOURCES.md)             | Da dove arrivano le playlist (catalogo, account, link)  |
-| [docs/GOOGLE-OAUTH-SETUP.md](docs/GOOGLE-OAUTH-SETUP.md) | Attivare l'accesso con Google                           |
-| [docs/ANDROID.md](docs/ANDROID.md)                       | App Android (TWA), firma, APK                           |
-| [docs/DEPLOY.md](docs/DEPLOY.md)                         | GitHub Actions, GitHub Pages, rilasci                   |
-| [docs/YOUTUBE-POLICIES.md](docs/YOUTUBE-POLICIES.md)     | Regole YouTube da rispettare                            |
-| [docs/DECISIONS.md](docs/DECISIONS.md)                   | Perché il progetto è fatto così                         |
-| [CHANGELOG.md](CHANGELOG.md)                             | Storia delle versioni                                   |
+Prima di modificare il codice leggi **[AGENTS.md](AGENTS.md)** (mappa, regole, ricette) e l'indice
+della documentazione **[docs/README.md](docs/README.md)**. Storia delle versioni:
+[CHANGELOG.md](CHANGELOG.md).
 
 ## Licenza
 

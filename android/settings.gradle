@@ -1,4 +1,4 @@
-// Android wrapper (Trusted Web Activity) for the web app. See docs/ANDROID.md.
+// Android wrapper (Trusted Web Activity) for the web app. See docs/sviluppo/android.md.
 pluginManagement {
     repositories {
         google()

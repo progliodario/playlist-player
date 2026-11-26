@@ -1,11 +1,16 @@
 # Architettura
 
+**In breve**: una web app React + TypeScript (Vite), installabile come PWA e pubblicata su GitHub
+Pages; l'APK Android è un guscio (Trusted Web Activity) che apre lo stesso sito. Le playlist
+arrivano da tre sorgenti; la riproduzione usa il player ufficiale di YouTube.
+
 ## Panoramica
 
 ```mermaid
 flowchart LR
-  subgraph CI["GitHub Actions (deploy giornaliero)"]
-    YTDLP["scripts/build-catalog.ts<br/>(yt-dlp, solo metadati)"] --> CAT["catalog/*.json"]
+  subgraph CI["GitHub Actions (ogni 15 min + ogni push)"]
+    YTDLP["scripts/build-catalog.ts<br/>(yt-dlp, solo metadati)"] --> CAT["catalog/*.json<br/>+ contentHash"]
+    CAT --> CMP{"cambiato?<br/>scripts/catalog-changed.ts"}
   end
   subgraph Browser["Browser / PWA / APK Android (TWA)"]
     UI["ui/ (React)"] --> ACT["app/actions.ts"]
@@ -18,7 +23,8 @@ flowchart LR
     PS --> Q["domain/queue (puro)"]
     PS --> ENG["youtube-player-engine"]
   end
-  CAT -. GitHub Pages .-> S1
+  CMP -- "sì: deploy" --> PAGES["GitHub Pages"]
+  PAGES -. "index.json ogni 5 min" .-> S1
   S2 -- "OAuth + Data API v3" --> GAPI["googleapis.com"]
   S3 -- "oEmbed + IFrame API" --> YT["youtube.com"]
   ENG -- "IFrame Player API" --> YT
@@ -26,70 +32,61 @@ flowchart LR
 
 ## Strati
 
-| Strato      | Cartella       | Può dipendere da                 | Note                                           |
-| ----------- | -------------- | -------------------------------- | ---------------------------------------------- |
-| Dominio     | `src/domain/`  | niente                           | Puro e testato. Usato anche dagli script Node. |
-| Sorgenti    | `src/sources/` | domain, state (settings), config | Una cartella per sorgente, stessa interfaccia. |
-| Player      | `src/player/`  | domain, state                    | Unico punto che parla con l'iframe YouTube.    |
-| Stato       | `src/state/`   | domain, sources                  | Store zustand.                                 |
-| App         | `src/app/`     | tutto tranne ui                  | Routing, azioni, effetti globali, PWA.         |
-| Interfaccia | `src/ui/`      | tutto                            | Solo presentazione + chiamate ad azioni/store. |
+Le dipendenze vanno solo verso il basso della tabella.
+
+| Strato         | Cartella       | Può dipendere da                     | Note                                                          |
+| -------------- | -------------- | ------------------------------------ | ------------------------------------------------------------- |
+| App            | `src/app/`     | tutto                                | Layout, routing, azioni, effetti globali, PWA                 |
+| Interfaccia    | `src/ui/`      | player, state, sources, i18n, domain | Componenti React; `art/` illustrazioni; `a11y/` accessibilità |
+| Testi          | `src/i18n/`    | state (lingua), domain (tipi)        | `it.ts` è la fonte di verità                                  |
+| Player         | `src/player/`  | state, i18n, domain                  | Unico punto che parla con l'iframe YouTube                    |
+| Stato          | `src/state/`   | sources, domain, config              | Store zustand                                                 |
+| Sorgenti       | `src/sources/` | state (settings), domain, config     | Una cartella per sorgente, stessa interfaccia                 |
+| Configurazione | `src/config/`  | `app.config.json`                    | Identità del progetto                                         |
+| Dominio        | `src/domain/`  | niente                               | Puro, testato, importato anche dagli script Node              |
 
 ## Stato (store zustand)
 
-| Store              | File                                | Persistito in localStorage | Contenuto                                                         |
-| ------------------ | ----------------------------------- | -------------------------- | ----------------------------------------------------------------- |
-| `useSettingsStore` | `src/state/settings-store.ts`       | sì (`pp:settings`)         | lingua, tema, tipo musica/video scelto, playlist aggiunte, filtri |
-| `useLibraryStore`  | `src/state/library-store.ts`        | no                         | elenco playlist per sorgente, playlist caricate                   |
-| `usePlayerStore`   | `src/player/player-store.ts`        | sì (`pp:player`)           | coda, stato, volume, ripeti                                       |
-| `usePlayerClock`   | `src/player/player-store.ts`        | no                         | tempo corrente e durata (cambia 2 volte al secondo)               |
-| `useAuthStore`     | `src/sources/account/auth-store.ts` | sì (`pp:auth`)             | token Google (max 1 ora), profilo                                 |
-| `useToastStore`    | `src/state/toast-store.ts`          | no                         | notifiche temporanee                                              |
-| `useInstallStore`  | `src/app/pwa.ts`                    | no                         | prompt di installazione PWA                                       |
+| Store               | File                                | Salvato nel browser | Contenuto                                                                      |
+| ------------------- | ----------------------------------- | ------------------- | ------------------------------------------------------------------------------ |
+| `useSettingsStore`  | `src/state/settings-store.ts`       | sì (`pp:settings`)  | lingua, tema, scorciatoie, tipo musica/video scelto, playlist aggiunte, filtri |
+| `useLibraryStore`   | `src/state/library-store.ts`        | no                  | playlist per sorgente, playlist caricate, versione del catalogo                |
+| `usePlayerStore`    | `src/player/player-store.ts`        | sì (`pp:player`)    | coda, stato YouTube, intenzione play/pausa, volume, ripeti                     |
+| `usePlayerClock`    | `src/player/player-store.ts`        | no                  | tempo e durata (cambiano 2 volte al secondo)                                   |
+| `useAuthStore`      | `src/sources/account/auth-store.ts` | sì (`pp:auth`)      | token Google (max 1 ora), profilo                                              |
+| `useToastStore`     | `src/state/toast-store.ts`          | no                  | notifiche visibili                                                             |
+| `useAnnouncerStore` | `src/state/announcer-store.ts`      | no                  | messaggi per i lettori di schermo                                              |
+| `useInstallStore`   | `src/app/pwa.ts`                    | no                  | prompt di installazione                                                        |
 
-Il tempo di ripresa (`pp:player:resume-time`) è salvato a parte ogni 5 secondi, per non riscrivere
-tutta la coda ad ogni tick.
+Tutte le chiavi `localStorage` sono in `src/state/storage-keys.ts`.
 
-## Ciclo di vita del player
+## Effetti globali (`src/app/effects.ts`)
 
-1. L'utente preme Riproduci → `actions.playPlaylistByKey()` carica la playlist (library store) e
-   chiama `usePlayerStore.playPlaylist()`.
-2. Il player store crea la coda (`domain/queue.ts`) e chiede all'engine di caricare il video.
-3. L'engine crea l'iframe **la prima volta** dentro `<PlayerViewport/>` e poi riusa sempre lo stesso.
-4. Gli eventi YouTube (`onStateChange`, `onError`) tornano allo store:
-   - `ENDED` → `queue.next('ended')` (rispetta "ripeti brano") → video successivo o fine coda;
-   - errore (video rimosso, incorporamento vietato…) → video segnato come non riproducibile,
-     salto automatico dopo 1,2 s; dopo 5 errori di fila si ferma.
-5. Mentre suona, un timer aggiorna `usePlayerClock` e salva la posizione.
-   - `status` è ciò che YouTube ha comunicato; `playIntent` è ciò che l'utente vuole (play/pausa).
-     Il pulsante play/pausa e il titolo della finestra seguono `playIntent`, perché **durante le
-     pubblicità YouTube non invia eventi di stato**: basandosi solo su `status` il pulsante
-     resterebbe bloccato.
-6. Al riavvio: la coda viene ripristinata, il player mostra la miniatura; premendo play il video
-   riparte dal punto salvato.
+Hook chiamati una volta da `<App/>`: tema (`data-theme`), lingua (`<html lang>`), titolo della
+finestra, focus al titolo dopo ogni navigazione, annuncio del brano, scorciatoie, caricamento
+della libreria e **controllo del catalogo ogni 5 minuti** (più al ritorno in primo piano e quando
+torna la rete). `index.html` applica tema e lingua salvati prima del primo disegno.
 
 ## Layout
 
-Un solo albero React; la disposizione cambia solo con il CSS (`src/styles/layout.css`,
-`player.css`), breakpoint **1024px**:
+Un solo albero React; la disposizione cambia solo con il CSS, breakpoint **1024px**:
 
-- **Desktop**: tre colonne — sidebar | contenuto | pannello "In riproduzione" (video 16:9, controlli,
-  volume, coda).
-- **Telefono**: striscia del player in alto (nascosta se la coda è vuota), contenuto, barra di
-  navigazione in basso. Per la musica il player è un quadrato 200×200 con titolo e comandi a
-  fianco; per i video è largo 16:9.
+- **Desktop**: sidebar | contenuto | pannello del lettore (video 16:9, disco, comandi, coda).
+- **Telefono**: striscia del lettore in alto (nascosta a coda vuota), contenuto, barra in basso.
+  Musica: lettore quadrato 200×200 con comandi a fianco (impilati sotto i 360px); video: largo 16:9.
+
+`<NowPlayingPanel/>` e `<PlayerViewport/>` non vengono mai smontati (vedi [lettore.md](lettore.md)).
 
 ## PWA e cache
 
-`vite-plugin-pwa` genera il service worker (`registerType: autoUpdate`):
+`vite-plugin-pwa` genera il service worker (aggiornamento automatico):
 
-- app shell (JS/CSS/HTML/icone) in precache → l'app si apre anche offline;
-- `catalog/*.json` → _stale-while-revalidate_;
-- miniature `i.ytimg.com` → _cache-first_ (30 giorni, max 800).
-- I video **non** vengono mai messi in cache (vietato e comunque impossibile con l'iframe).
+- app shell (JS, CSS, HTML, icone, font latini) in precache → si apre anche offline;
+- `catalog/*.json` → _network first_ (timeout 4 s): online sempre aggiornato, offline la copia;
+- miniature `i.ytimg.com` → _cache first_ (30 giorni, max 800);
+- i video **non** vengono mai messi in cache.
 
 ## Android
 
-`android/` è una Trusted Web Activity: un launcher che apre `publicUrl` in Chrome a schermo intero.
-Nessuna logica: ogni modifica al sito arriva anche all'app senza ripubblicare l'APK.
-Dettagli in [ANDROID.md](ANDROID.md).
+`android/` è una Trusted Web Activity senza logica: ogni deploy del sito arriva anche all'app.
+Dettagli in [android.md](android.md).

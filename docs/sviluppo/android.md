@@ -1,5 +1,8 @@
 # App Android
 
+**In breve**: l'APK è un guscio (Trusted Web Activity) che apre il sito in Chrome a schermo
+intero. Si pubblica con un tag `vX.Y.Z`; la firma sta nei GitHub Secrets.
+
 ## Come funziona
 
 L'APK è una **Trusted Web Activity (TWA)**: un piccolo launcher (libreria ufficiale
@@ -8,7 +11,7 @@ L'APK è una **Trusted Web Activity (TWA)**: un piccolo launcher (libreria uffic
 
 - Nessuna logica nell'APK: tutto è nel sito. Ogni deploy del sito aggiorna anche l'app.
 - Il login Google e il player YouTube funzionano come in Chrome (in una WebView non funzionerebbero:
-  vedi [DECISIONS.md](DECISIONS.md)).
+  vedi [../decisioni/0001-pwa-e-twa.md](../decisioni/0001-pwa-e-twa.md)).
 - Requisito sul telefono: Google Chrome (o un altro browser compatibile con TWA). Senza, l'app
   apre una Custom Tab.
 

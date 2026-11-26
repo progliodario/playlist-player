@@ -1,39 +1,43 @@
-# Attivare l'accesso con Google (facoltativo)
+# Attivare l'accesso con Google
 
-Serve **solo** per vedere playlist private/non in elenco e i video piaciuti. Le playlist
+**In breve**: serve **una volta sola**, a chi gestisce l'app, per creare un "OAuth Client ID" su
+Google Cloud e scriverlo in `app.config.json`. Dopo, per gli utenti l'accesso è **un clic** su
+"Accedi con Google". Serve solo per playlist private/non in elenco e video piaciuti: le playlist
 pubbliche del canale funzionano senza.
 
-Tempo: ~10 minuti, una volta sola. Costo: gratis.
+Tempo: ~10 minuti. Costo: gratis.
 
-## 1. Progetto Google Cloud
+## 1. Progetto e API
 
-1. Vai su <https://console.cloud.google.com/> con il tuo account Google e accetta i termini se richiesto.
-2. In alto: selettore progetti → **Nuovo progetto** → nome `playlist-player` → **Crea**.
-3. Menu ☰ → **API e servizi** → **Libreria** → cerca **YouTube Data API v3** → **Abilita**.
+1. Apri <https://console.cloud.google.com/projectcreate> con l'account Google del canale →
+   nome `playlist-player` → **Crea**.
+2. Apri <https://console.cloud.google.com/apis/library/youtube.googleapis.com> (con il progetto
+   selezionato in alto) → **Abilita**.
 
-## 2. Schermata di consenso OAuth
+## 2. Schermata di consenso
 
-1. **API e servizi** → **Schermata di consenso OAuth** (o "Google Auth Platform").
-2. Tipo di utente: **Esterno** → nome app `Playlist Player`, email di supporto e email dello
-   sviluppatore: la tua.
-3. **Ambiti/Scopes**: aggiungi `https://www.googleapis.com/auth/youtube.readonly`.
-4. **Utenti di test**: aggiungi l'indirizzo Gmail del tuo account YouTube.
-5. Lascia l'app in modalità **Test** (nessuna verifica necessaria per uso personale; al login
-   Google mostrerà "App non verificata" → **Continua**).
+1. Apri <https://console.cloud.google.com/auth/overview> → **Inizia**.
+2. Nome app `Playlist Player`, email di assistenza: la tua → Pubblico: **Esterno** → contatto: la
+   tua email → accetta le norme → **Crea**.
+3. **Pubblico** → _Utenti di test_ → **Aggiungi utenti** → l'email del tuo account YouTube.
+   (Modalità "Test": nessuna verifica di Google necessaria; al primo accesso compare "App non
+   verificata" → **Continua**.)
+4. **Accesso ai dati** → **Aggiungi o rimuovi ambiti** → cerca `youtube.readonly` → seleziona
+   `.../auth/youtube.readonly` → **Aggiorna** → **Salva**.
 
 ## 3. Client ID
 
-1. **API e servizi** → **Credenziali** → **Crea credenziali** → **ID client OAuth**.
-2. Tipo di applicazione: **Applicazione web**, nome `Playlist Player`.
+1. Apri <https://console.cloud.google.com/auth/clients/create>.
+2. Tipo: **Applicazione web**, nome `Playlist Player`.
 3. **Origini JavaScript autorizzate** (senza barra finale):
    - `https://progliodario.github.io`
-   - `http://localhost:5173` (per lo sviluppo)
-4. URI di reindirizzamento: nessuno. → **Crea** e copia l'**ID client**
-   (`1234567890-xxxx.apps.googleusercontent.com`). Non serve il "client secret".
+   - `http://localhost:5173` (sviluppo)
+4. **Crea** e copia l'**ID client** (`1234567890-xxxx.apps.googleusercontent.com`).
+   Il "client secret" non serve.
 
 ## 4. Inserirlo nell'app
 
-Modo consigliato (vale per tutti i dispositivi): in `app.config.json`
+In `app.config.json`:
 
 ```json
 "google": {
@@ -41,23 +45,19 @@ Modo consigliato (vale per tutti i dispositivi): in `app.config.json`
 }
 ```
 
-poi commit + push: il deploy automatico pubblica la nuova versione in pochi minuti.
-Il Client ID **non è un segreto** (è visibile in ogni pagina che lo usa), può stare nel repository.
+Commit + push: in pochi minuti il deploy pubblica la nuova versione e il pulsante **Accedi con
+Google** compare in Libreria e Impostazioni. Il Client ID **non è un segreto** (è visibile in ogni
+pagina che lo usa).
 
-Modo rapido (solo su un dispositivo, senza toccare il codice): app → **Impostazioni** →
-**Account Google** → _OAuth Client ID (avanzato)_ → incolla → **Salva**.
-
-## 5. Usarlo
-
-Impostazioni → **Accedi con Google** → scegli l'account → consenti l'accesso in sola lettura.
-In Libreria compare la sezione **Il tuo account**.
+Prova rapida senza modificare il codice (solo sul tuo dispositivo): Impostazioni → Account
+Google → _OAuth Client ID (avanzato)_ → incolla → **Salva**.
 
 ## Problemi comuni
 
-| Messaggio                                             | Causa / soluzione                                                                       |
-| ----------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `idpiframe_initialization_failed` / `origin_mismatch` | L'origine non è tra le "Origini JavaScript autorizzate" (controlla http/https e porta). |
-| `access_denied`                                       | Il tuo account non è tra gli **utenti di test** della schermata di consenso.            |
-| Popup che si chiude subito                            | Popup bloccati dal browser: consentili per il sito.                                     |
-| `quotaExceeded`                                       | Superate le 10.000 unità giornaliere dell'API: riprova domani.                          |
-| Sessione scaduta dopo un'ora                          | Normale (token senza backend): premi **Riconnetti**.                                    |
+| Messaggio                                             | Causa / soluzione                                                           |
+| ----------------------------------------------------- | --------------------------------------------------------------------------- |
+| `origin_mismatch` / `idpiframe_initialization_failed` | L'origine non è tra le "Origini JavaScript autorizzate" (http/https, porta) |
+| `access_denied`                                       | L'account non è tra gli **utenti di test**                                  |
+| Popup che si chiude subito                            | Popup bloccati dal browser: consentili per il sito                          |
+| `quotaExceeded`                                       | Superate le 10.000 unità giornaliere dell'API: riprova domani               |
+| Sessione scaduta dopo un'ora                          | Normale (token senza backend): un clic su **Riconnetti**                    |
