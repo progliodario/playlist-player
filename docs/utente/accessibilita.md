@@ -22,12 +22,20 @@ Playlist Player punta alla conformità con le **WCAG 2.2 livello AA**.
 - **Scorciatoie a un tasto** disattivabili (Impostazioni → Scorciatoie da tastiera).
 - **Notifiche**: gli errori restano finché non li chiudi; le altre si fermano se ci passi sopra
   con il mouse o con il focus.
+- **Lettore dell'app Android** (schermata nativa): ogni comando ha un nome e uno stato letti da
+  TalkBack (es. "Riproduzione casuale, attivato"), la posizione nel brano è letta come
+  "1:23 di 3:45", il titolo del brano che cambia viene annunciato, i bersagli sono di almeno
+  48×48 dp e il testo segue la dimensione dei caratteri di sistema. Gli stessi comandi sono nella
+  notifica e nella schermata di blocco.
+- **App Windows**: è la stessa interfaccia del sito; in più tasti multimediali e riquadro
+  multimediale di Windows.
 
 ## Limiti noti
 
-- Il **contenuto dei video** (sottotitoli, audiodescrizione) dipende da YouTube e dal player
-  ufficiale.
-- Le **pubblicità** sono gestite da YouTube e possono non essere accessibili.
+- Il **contenuto dei video** (sottotitoli, audiodescrizione) dipende da YouTube. Nei lettori senza
+  pubblicità delle app i sottotitoli dei video non sono ancora mostrati.
+- Nel browser le **pubblicità** sono gestite da YouTube e possono non essere accessibili.
+- La schermata del lettore Android usa sempre il tema scuro "Notturno".
 - Le illustrazioni decorative non hanno descrizione testuale perché non portano informazioni.
 
 ## Segnalare un problema

@@ -1,17 +1,18 @@
 # Playlist Player
 
 App per **Windows e Android** che mostra e riproduce le playlist YouTube del canale
-[@DarioProglio](https://www.youtube.com/@DarioProglio): **canzoni** e **video**, con una grafica
-illustrata ("Notturno": cielo di notte, aurora, vinili) e accessibilità completa.
+[@DarioProglio](https://www.youtube.com/@DarioProglio): **canzoni** e **video**, **senza
+pubblicità** e anche **a schermo spento**, con una grafica illustrata ("Notturno": cielo di notte,
+aurora, vinili) e accessibilità completa.
 
 **Apri l'app → https://progliodario.github.io/playlist-player/**
 
 ## Installazione
 
-| Dispositivo | Come                                                                                                                                                                           |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Windows** | Apri il link con **Edge** o **Chrome** → menu `⋯` → **Installa questo sito come app**. Compare nel menu Start come un'app normale.                                             |
-| **Android** | Scarica l'APK dall'ultima [Release](https://github.com/progliodario/playlist-player/releases/latest) e installalo (serve Chrome). Oppure Chrome → menu `⋮` → **Installa app**. |
+| Dispositivo | Come                                                                                                                                                                                                       |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Windows** | Scarica `playlist-player-setup.exe` dall'ultima [Release](https://github.com/progliodario/playlist-player/releases/latest) e aprilo (se Windows avvisa: **Ulteriori informazioni** → **Esegui comunque**). |
+| **Android** | Scarica l'APK dall'ultima [Release](https://github.com/progliodario/playlist-player/releases/latest) e installalo (serve Chrome).                                                                          |
 
 Dettagli: [docs/utente/installazione.md](docs/utente/installazione.md).
 
@@ -34,11 +35,13 @@ Guida all'uso: [docs/utente/guida.md](docs/utente/guida.md).
 
 ## Pubblicità e schermo spento
 
-L'app usa il player ufficiale di YouTube e rispetta le sue regole, che vietano di bloccare le
-pubblicità e di riprodurre con il player nascosto. Con **YouTube Premium** le pubblicità spariscono
-anche qui (basta l'accesso a YouTube nello stesso browser) e il pulsante **Apri in YouTube Music**
-continua l'ascolto a schermo spento nell'app ufficiale.
-Dettagli: [docs/utente/domande-frequenti.md](docs/utente/domande-frequenti.md).
+Le app per **Android** e **Windows** hanno un lettore proprio: **niente pubblicità**, la musica
+continua a schermo spento o con la finestra ridotta a icona, con i comandi nella schermata di blocco
+e sui tasti multimediali. Nel browser (senza app) l'unica possibilità è il player di YouTube, con le
+sue pubblicità. Dettagli: [docs/utente/domande-frequenti.md](docs/utente/domande-frequenti.md).
+
+> Il lettore senza pubblicità va contro le regole di YouTube per gli sviluppatori: è una scelta
+> consapevole del proprietario ([decisione 0015](docs/decisioni/0015-lettori-senza-pubblicita.md)).
 
 ## Per sviluppatori e agenti AI
 
@@ -57,4 +60,5 @@ della documentazione **[docs/README.md](docs/README.md)**. Storia delle versioni
 
 ## Licenza
 
-[MIT](LICENSE). App non ufficiale, non affiliata a YouTube o Google.
+[MIT](LICENSE), tranne l'app Android (`android/`), che include NewPipeExtractor ed è quindi
+[GPL-3.0-or-later](android/LICENSE). App non ufficiale, non affiliata a YouTube o Google.

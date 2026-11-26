@@ -1,8 +1,9 @@
 # Architettura
 
 **In breve**: una web app React + TypeScript (Vite), installabile come PWA e pubblicata su GitHub
-Pages; l'APK Android è un guscio (Trusted Web Activity) che apre lo stesso sito. Le playlist
-arrivano da tre sorgenti; la riproduzione usa il player ufficiale di YouTube.
+Pages. L'APK Android (Trusted Web Activity + lettore nativo) e l'app Windows (Electron) aprono lo
+stesso sito e aggiungono un lettore senza pubblicità. Le playlist arrivano da tre sorgenti; nel
+browser la riproduzione usa il player di YouTube ([app-native.md](app-native.md)).
 
 ## Panoramica
 
@@ -21,29 +22,34 @@ flowchart LR
     SRC --> S2["account-source"]
     SRC --> S3["manual-source"]
     PS --> Q["domain/queue (puro)"]
-    PS --> ENG["youtube-player-engine"]
+    PS --> ENG["player-engine<br/>youtube | stream | android"]
   end
+  ENG -- "app Android: intent://play" --> NAT["android/…/player<br/>Media3 + NewPipeExtractor"]
+  ENG -- "app Windows: ppstream://" --> DESK["desktop/main<br/>yt-dlp"]
   CMP -- "sì: deploy" --> PAGES["GitHub Pages"]
   PAGES -. "index.json ogni 5 min" .-> S1
   S2 -- "OAuth + Data API v3" --> GAPI["googleapis.com"]
   S3 -- "oEmbed + IFrame API" --> YT["youtube.com"]
   ENG -- "IFrame Player API" --> YT
+  NAT -- "stream" --> GV["googlevideo.com"]
+  DESK -- "stream" --> GV
 ```
 
 ## Strati
 
 Le dipendenze vanno solo verso il basso della tabella.
 
-| Strato         | Cartella       | Può dipendere da                     | Note                                                          |
-| -------------- | -------------- | ------------------------------------ | ------------------------------------------------------------- |
-| App            | `src/app/`     | tutto                                | Layout, routing, azioni, effetti globali, PWA                 |
-| Interfaccia    | `src/ui/`      | player, state, sources, i18n, domain | Componenti React; `art/` illustrazioni; `a11y/` accessibilità |
-| Testi          | `src/i18n/`    | state (lingua), domain (tipi)        | `it.ts` è la fonte di verità                                  |
-| Player         | `src/player/`  | state, i18n, domain                  | Unico punto che parla con l'iframe YouTube                    |
-| Stato          | `src/state/`   | sources, domain, config              | Store zustand                                                 |
-| Sorgenti       | `src/sources/` | state (settings), domain, config     | Una cartella per sorgente, stessa interfaccia                 |
-| Configurazione | `src/config/`  | `app.config.json`                    | Identità del progetto                                         |
-| Dominio        | `src/domain/`  | niente                               | Puro, testato, importato anche dagli script Node              |
+| Strato         | Cartella        | Può dipendere da                     | Note                                                             |
+| -------------- | --------------- | ------------------------------------ | ---------------------------------------------------------------- |
+| App            | `src/app/`      | tutto                                | Layout, routing, azioni, effetti globali, PWA                    |
+| Interfaccia    | `src/ui/`       | player, state, sources, i18n, domain | Componenti React; `art/` illustrazioni; `a11y/` accessibilità    |
+| Testi          | `src/i18n/`     | state (lingua), domain (tipi)        | `it.ts` è la fonte di verità                                     |
+| Player         | `src/player/`   | platform, state, i18n, domain        | Motori di riproduzione (iframe YouTube, `<video>`, hand-off)     |
+| Piattaforma    | `src/platform/` | config, domain                       | Dove gira la pagina (web, Android, Windows) e ponti verso le app |
+| Stato          | `src/state/`    | sources, domain, config              | Store zustand                                                    |
+| Sorgenti       | `src/sources/`  | state (settings), domain, config     | Una cartella per sorgente, stessa interfaccia                    |
+| Configurazione | `src/config/`   | `app.config.json`                    | Identità del progetto                                            |
+| Dominio        | `src/domain/`   | niente                               | Puro, testato, importato anche dagli script Node                 |
 
 ## Stato (store zustand)
 
