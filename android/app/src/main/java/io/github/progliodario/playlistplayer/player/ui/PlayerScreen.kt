@@ -73,7 +73,6 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import coil3.compose.AsyncImage
 import io.github.progliodario.playlistplayer.R
 import io.github.progliodario.playlistplayer.player.PlayerActions
 import io.github.progliodario.playlistplayer.player.PlayerUiState
@@ -296,10 +295,8 @@ private fun Artwork(ui: PlayerUiState) {
                 .semantics { contentDescription = description },
         )
     } else {
-        AsyncImage(
-            model = ui.artworkUri,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
+        RemoteImage(
+            url = ui.artworkUri?.toString(),
             modifier = Modifier
                 .fillMaxWidth(0.78f)
                 .widthIn(max = 360.dp)
@@ -457,10 +454,8 @@ private fun QueueItem(row: QueueRow, current: Boolean, onClick: () -> Unit) {
             .padding(horizontal = 8.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AsyncImage(
-            model = "https://i.ytimg.com/vi/${row.videoId}/mqdefault.jpg",
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
+        RemoteImage(
+            url = "https://i.ytimg.com/vi/${row.videoId}/mqdefault.jpg",
             modifier = Modifier.size(56.dp).clip(RoundedCornerShape(10.dp)).background(Night.Surface3),
         )
         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {

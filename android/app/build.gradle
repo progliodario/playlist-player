@@ -106,7 +106,8 @@ kotlin {
 }
 
 // Versions are pinned and chosen to work with compileSdk 36 / AGP 8 (decision 0010):
-// newer AndroidX releases (androidx.core 1.19+, Compose BOM 2026.11+) need compileSdk 37.
+// newer releases (androidx.core 1.19+, Compose 1.12+ = BOM 2026.08+, OkHttp 5.5+) need
+// compileSdk 37 and AGP 9. The build fails at checkReleaseAarMetadata if one sneaks in.
 dependencies {
     // Trusted Web Activity: https://github.com/GoogleChrome/android-browser-helper
     implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.8.0'
@@ -119,19 +120,17 @@ dependencies {
     implementation 'androidx.media3:media3-session:1.11.1'
     implementation 'androidx.media3:media3-ui:1.11.1'
     implementation 'androidx.media3:media3-datasource-okhttp:1.11.1'
-    implementation 'com.squareup.okhttp3:okhttp:5.5.1'
+    implementation 'com.squareup.okhttp3:okhttp:5.4.0'
     // Finds YouTube streams: https://github.com/TeamNewPipe/NewPipeExtractor (GPL-3.0)
     implementation 'com.github.TeamNewPipe:NewPipeExtractor:v0.27.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0'
 
-    // Player screen (Jetpack Compose) and images
-    implementation platform('androidx.compose:compose-bom:2026.09.00')
+    // Player screen (Jetpack Compose)
+    implementation platform('androidx.compose:compose-bom:2026.06.01')
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.foundation:foundation'
     implementation 'androidx.compose.material3:material3'
     implementation 'androidx.activity:activity-compose:1.12.0'
-    implementation 'io.coil-kt.coil3:coil-compose:3.6.3'
-    implementation 'io.coil-kt.coil3:coil-network-okhttp:3.6.3'
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs_nio:2.1.5'
 
