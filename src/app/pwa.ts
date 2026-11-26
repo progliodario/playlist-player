@@ -1,6 +1,10 @@
 /**
  * Progressive Web App wiring: service worker registration (offline app shell,
  * automatic updates) and the "Install app" prompt.
+ *
+ * Updates: the service worker activates a new version immediately (skipWaiting and
+ * clientsClaim in vite.config.ts) and the page reloads itself. An app left open for hours
+ * (installed window, Android app) also checks for a new version every 30 minutes.
  */
 import { registerSW } from 'virtual:pwa-register';
 import { create } from 'zustand';
@@ -23,8 +27,18 @@ export const useInstallStore = create<InstallState>()(() => ({
   isInstalled: false,
 }));
 
+const UPDATE_CHECK_MS = 30 * 60 * 1000;
+
 export function setupPwa(): void {
-  registerSW({ immediate: true });
+  registerSW({
+    immediate: true,
+    onRegisteredSW(_url, registration) {
+      if (!registration) return;
+      window.setInterval(() => {
+        if (navigator.onLine) void registration.update().catch(() => undefined);
+      }, UPDATE_CHECK_MS);
+    },
+  });
 
   useInstallStore.setState({
     isInstalled: window.matchMedia('(display-mode: standalone)').matches,

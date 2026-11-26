@@ -50,6 +50,11 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // A new version takes over immediately instead of waiting for every window of the
+        // app to close. vite-plugin-pwa only sets these by itself with injectRegister 'auto';
+        // we register manually (src/app/pwa.ts), so they must be explicit.
+        skipWaiting: true,
+        clientsClaim: true,
         // Fonts: only the Latin subsets are precached; others load on demand if ever needed.
         globPatterns: ['**/*.{js,css,html,svg,png}', '**/*latin*.woff2'],
         // The catalog is data, not app shell: it is cached at runtime instead (see below).

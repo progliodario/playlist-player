@@ -79,7 +79,9 @@ Un solo albero React; la disposizione cambia solo con il CSS, breakpoint **1024p
 
 ## PWA e cache
 
-`vite-plugin-pwa` genera il service worker (aggiornamento automatico):
+`vite-plugin-pwa` genera il service worker. Una nuova versione si attiva subito
+(`skipWaiting` + `clientsClaim` in `vite.config.ts`) e la pagina si ricarica; l'app aperta a lungo
+controlla gli aggiornamenti ogni 30 minuti (`src/app/pwa.ts`).
 
 - app shell (JS, CSS, HTML, icone, font latini) in precache → si apre anche offline;
 - `catalog/*.json` → _network first_ (timeout 4 s): online sempre aggiornato, offline la copia;
