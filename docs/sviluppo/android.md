@@ -52,7 +52,7 @@ Lato pagina, dentro l'app il pannello del lettore mostra "Apri il lettore" invec
 | `.github/workflows/android.yml`                            | Test, build in CI e pubblicazione della Release                    |
 
 Versioni: Android Gradle Plugin 9.5.3 (con Kotlin integrato), Kotlin 2.4.21, Gradle 9.9.2, JDK 17,
-compileSdk 37, targetSdk 36, minSdk 24 (Android 7.0 o successivo). Media3 1.11.1, Compose BOM
+compileSdk 37.1, targetSdk 36, minSdk 24 (Android 7.0 o successivo). Media3 1.11.1, Compose BOM
 2026.11.01, OkHttp 5.5.1, NewPipeExtractor v0.27.1 ([decisione 0010](../decisioni/0010-agp-8.md)).
 
 **Licenza**: NewPipeExtractor è GPL-3.0, quindi l'APK e la cartella `android/` sono distribuiti con

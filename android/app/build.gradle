@@ -30,9 +30,13 @@ def keystorePath = System.getenv('ANDROID_KEYSTORE_PATH')
 
 android {
     namespace = 'io.github.progliodario.playlistplayer'
-    // compileSdk 37 is needed by current AndroidX/OkHttp releases; targetSdk stays 36 so the
-    // app's runtime behaviour does not change until it is tested on Android 17.
-    compileSdk = 37
+    // Compile against Android 17 QPR1 (API 37.1): Compose 1.13 requires it. targetSdk stays 36
+    // so the app's runtime behaviour does not change until it is tested on Android 17.
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
 
     defaultConfig {
         applicationId = appConfig.android.applicationId
