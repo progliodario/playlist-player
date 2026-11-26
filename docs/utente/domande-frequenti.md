@@ -12,6 +12,11 @@ Nel **browser** non si può: una pagina web può usare solo il player di YouTube
 pubblicità e si ferma quando la pagina non è visibile. Lì le pubblicità spariscono solo con
 YouTube Premium (accesso a YouTube nello stesso browser).
 
+## L'app Android si chiude appena aperta ("continua a interrompersi")
+
+Succedeva con la versione 1.3.0. Scarica e installa l'APK **1.3.1 o successivo** dalla pagina dei
+download ([installazione](installazione.md)): si installa sopra quella vecchia, senza disinstallare.
+
 ## Il lettore dell'app salta tutti i brani o non parte
 
 YouTube cambia spesso il modo in cui fornisce i video e ogni tanto il lettore senza pubblicità va

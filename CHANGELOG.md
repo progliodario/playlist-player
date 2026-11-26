@@ -5,10 +5,21 @@ Tutte le modifiche rilevanti, dalla più recente. Formato ispirato a
 
 ## [Non rilasciato]
 
+## [1.3.1] — 2026-11-26
+
 ### Corretto
 
+- **L'app Android si chiudeva appena aperta** ("Playlist Player continua a interrompersi"): mancava
+  nel manifest la schermata "Impostazioni del sito" che la libreria della Trusted Web Activity
+  aggiunge come scorciatoia a ogni avvio. Ora c'è (apre dati e permessi del sito in Chrome, anche da
+  Impostazioni di Android → App → Playlist Player → Gestisci spazio).
 - Il controllo automatico delle playlist del canale parte più spesso: GitHub scartava quasi tutte
   le esecuzioni programmate ai minuti 0/15/30/45, ora girano ai minuti 7/22/37/52.
+
+### Aggiunto
+
+- Workflow **Android smoke test**: a ogni PR che tocca `android/` installa l'APK su emulatori con
+  Android 12, 14 e 16, apre l'app e il lettore nativo e fallisce se l'app si chiude.
 
 ### Manutenzione
 

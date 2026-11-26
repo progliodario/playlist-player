@@ -40,6 +40,8 @@ Lato pagina, dentro l'app il pannello del lettore mostra "Apri il lettore" invec
 | ---------------------------------------------------------- | ------------------------------------------------------------------ |
 | `android/app/build.gradle`                                 | Identità da `app.config.json`, dipendenze                          |
 | `android/app/src/main/AndroidManifest.xml`                 | Launcher TWA, link verificati, `PlayerActivity`, `PlaybackService` |
+| `android/scripts/smoke-test.sh`                            | Apre app e lettore su emulatore o telefono, fallisce se si chiude  |
+| `.github/workflows/android-smoke.yml`                      | Esegue `smoke-test.sh` su emulatori Android 12, 14 e 16            |
 | `android/app/src/main/java/.../player/Handoff.kt`          | Formato della coda (uguale a `src/domain/handoff-payload.ts`)      |
 | `android/app/src/main/java/.../player/PlaybackService.kt`  | Lettore: coda, video sì/no, errori, salvataggio                    |
 | `android/app/src/main/java/.../player/StreamResolver.kt`   | NewPipeExtractor: URL dell'audio e manifest HLS, con cache         |
@@ -67,6 +69,28 @@ licenza GPL-3.0-or-later (`android/LICENSE`). Il resto del repository è MIT.
 
 Per una build di prova senza Release: tab **Actions** → **Android APK** → **Run workflow**
 (l'APK è tra gli _artifacts_ del run).
+
+## Prova su emulatore ("l'app continua a interrompersi")
+
+Il workflow **Android smoke test** (`.github/workflows/android-smoke.yml`) parte a ogni PR che
+tocca `android/`. Installa l'APK su emulatori con Android 12, 14 e 16 (immagini con Google Chrome)
+ed esegue `android/scripts/smoke-test.sh`, che:
+
+1. apre l'app come dal menu delle app (Trusted Web Activity);
+2. apre il lettore nativo con una coda di un brano, come fa la pagina;
+3. manda l'app in background (il servizio continua a suonare);
+4. fallisce se il processo dell'app si è chiuso, stampando l'errore (stack trace).
+
+Screenshot e logcat completo sono negli _artifacts_ `smoke-api-NN` del run. Per provare l'APK di
+una Release già pubblicata: **Actions** → **Android smoke test** → **Run workflow** → `release` =
+es. `v1.3.1`. Con un telefono collegato via USB (debug USB attivo, `adb` installato):
+`bash android/scripts/smoke-test.sh playlist-player-X.Y.Z.apk`.
+
+**Attività obbligatorie nel manifest**: `LauncherActivity` di android-browser-helper usa anche
+`ManageDataLauncherActivity` (scorciatoia "Impostazioni del sito", creata a ogni avvio),
+`FocusActivity`, `WebViewFallbackActivity`, il `FileProvider` e `DelegationService`. Se ne manca
+una l'app si chiude all'avvio (è successo con la 1.3.0). Il modello di riferimento è il manifest
+generato da [Bubblewrap](https://github.com/GoogleChromeLabs/bubblewrap).
 
 ## Firma
 

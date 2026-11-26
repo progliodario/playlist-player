@@ -1,0 +1,86 @@
+# Opens the Android app on emulators (Android 12, 14 and 16) and fails if it crashes
+# (android/scripts/smoke-test.sh): catches "Playlist Player keeps stopping" before a release.
+#
+#  - pull request touching android/ -> builds the APK and tests it
+#  - "Run workflow" from the Actions tab -> same; with "release" = e.g. v1.3.0 it tests the
+#    APK published in that Release instead
+#
+# Screenshots and the full logcat are in the "smoke-api-NN" artifacts of the run.
+name: Android smoke test
+
+on:
+  pull_request:
+    paths: ['android/**', 'app.config.json', '.github/workflows/android-smoke.yml']
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Tag of a Release whose APK to test (empty = build from this branch)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+# A new push to the same PR cancels the older run.
+concurrency:
+  group: android-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        api-level: [31, 34, 36]
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download the APK of the Release
+        if: inputs.release != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download "${{ inputs.release }}" --pattern '*.apk' --output app.apk
+
+      - uses: actions/setup-java@v6
+        if: inputs.release == ''
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v6
+        if: inputs.release == ''
+        with:
+          gradle-version: '9.9.2'
+
+      # Release build type (what users install), signed with the debug key.
+      - name: Build the APK
+        if: inputs.release == ''
+        run: |
+          gradle -p android assembleRelease --no-daemon || { sleep 60; gradle -p android assembleRelease --no-daemon; }
+          cp android/app/build/outputs/apk/release/app-release.apk app.apk
+
+      - name: Enable KVM (hardware acceleration for the emulator)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Play Store images include Google Chrome, which runs the Trusted Web Activity.
+      - name: Open the app on Android API ${{ matrix.api-level }}
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: google_apis_playstore
+          arch: x86_64
+          disable-animations: true
+          emulator-boot-timeout: 900
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: bash android/scripts/smoke-test.sh app.apk smoke-output
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: smoke-api-${{ matrix.api-level }}
+          path: smoke-output/

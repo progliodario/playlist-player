@@ -64,7 +64,7 @@ android/                   app Android: TWA + lettore nativo (app/src/main/java/
 desktop/                   app Windows (Electron): main/ (yt-dlp, ppstream://, accesso Google), preload.cjs
 public/                    icone e favicon; public/catalog/ è generato e ignorato da git
 docs/                      utente/, sviluppo/, decisioni/ (in italiano)
-.github/workflows/         ci.yml, deploy.yml (ogni 15 min + push), android.yml, desktop.yml
+.github/workflows/         ci.yml, deploy.yml (ogni 15 min + push), android.yml, android-smoke.yml, desktop.yml
 ```
 
 ## Regole da non rompere (invarianti)
@@ -126,6 +126,7 @@ docs/                      utente/, sviluppo/, decisioni/ (in italiano)
 | Cambiare la frequenza di aggiornamento          | `cron` in `.github/workflows/deploy.yml`, `CATALOG_POLL_MS` in `src/app/effects.ts`                                                                                                                                       |
 | Il lettore delle app non trova più gli stream   | `docs/sviluppo/app-native.md` § Quando YouTube cambia (aggiorna NewPipeExtractor; yt-dlp si aggiorna da solo)                                                                                                             |
 | Cambiare il lettore nativo Android              | `android/app/src/main/java/.../player/` (`PlaybackService.kt`, `ui/PlayerScreen.kt`), `docs/sviluppo/android.md`                                                                                                          |
+| Capire perché l'app Android si chiude           | workflow **Android smoke test** (stack trace nel log, logcat negli artifacts), `docs/sviluppo/android.md` § Prova su emulatore                                                                                            |
 | Cambiare l'app Windows                          | `desktop/main/`, `docs/sviluppo/app-windows.md`; prova con `PP_APP_URL` e `npm start`                                                                                                                                     |
 | Rilasciare una versione / APK                   | `docs/sviluppo/deploy-e-rilasci.md` § Rilasciare una versione                                                                                                                                                             |
 
