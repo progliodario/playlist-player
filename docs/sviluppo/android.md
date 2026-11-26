@@ -1,32 +1,63 @@
 # App Android
 
-**In breve**: l'APK è un guscio (Trusted Web Activity) che apre il sito in Chrome a schermo
-intero. Si pubblica con un tag `vX.Y.Z`; la firma sta nei GitHub Secrets.
+**In breve**: l'APK ha due parti. Una **Trusted Web Activity** apre il sito in Chrome a schermo
+intero (interfaccia, libreria, accesso con Google). Un **lettore nativo** riceve la coda dalla
+pagina e suona senza pubblicità, anche a schermo spento. Si pubblica con un tag `vX.Y.Z`; la firma
+sta nei GitHub Secrets.
 
 ## Come funziona
 
-L'APK è una **Trusted Web Activity (TWA)**: un piccolo launcher (libreria ufficiale
-[android-browser-helper](https://github.com/GoogleChrome/android-browser-helper)) che apre
-`app.config.json → publicUrl` dentro **Chrome**, a schermo intero, con icona e splash propri.
+**1. La web app (TWA).** Un piccolo launcher (libreria ufficiale
+[android-browser-helper](https://github.com/GoogleChrome/android-browser-helper)) apre
+`app.config.json → publicUrl?shell=android` dentro **Chrome**, a schermo intero, con icona e splash
+propri. Ogni deploy del sito aggiorna anche l'interfaccia dell'app. Il login Google funziona come in
+Chrome ([decisione 0001](../decisioni/0001-pwa-e-twa.md)). Requisito: Google Chrome (o un altro
+browser compatibile con TWA); senza, l'app apre una Custom Tab.
 
-- Nessuna logica nell'APK: tutto è nel sito. Ogni deploy del sito aggiorna anche l'app.
-- Il login Google e il player YouTube funzionano come in Chrome (in una WebView non funzionerebbero:
-  vedi [../decisioni/0001-pwa-e-twa.md](../decisioni/0001-pwa-e-twa.md)).
-- Requisito sul telefono: Google Chrome (o un altro browser compatibile con TWA). Senza, l'app
-  apre una Custom Tab.
+**2. Il lettore nativo** ([decisione 0015](../decisioni/0015-lettori-senza-pubblicita.md)).
+Grazie a `?shell=android` la pagina sa di essere nell'app (`src/platform/shell.ts`) e quando
+premi play apre `intent://play/#Intent;scheme=playlistplayer;package=…;S.payload=<coda JSON>;end`
+(`src/platform/android-player.ts`, formato in `src/domain/handoff-payload.ts`). Chrome apre
+`PlayerActivity`, che passa la coda a `PlaybackService`:
+
+- **Media3** (`MediaSessionService` + ExoPlayer): suona in un servizio in primo piano, quindi
+  continua a schermo spento o con un'altra app aperta; comandi in notifica, schermata di blocco,
+  cuffie e auto Bluetooth; pausa automatica se si staccano le cuffie.
+- **NewPipeExtractor** (`StreamResolver.kt`): trova l'audio di ogni video al momento di suonarlo
+  (URI `yt://youtube/<id>/audio`); nessun player di YouTube, quindi nessuna pubblicità. Il brano
+  successivo viene preparato in anticipo; gli URL scaduti vengono richiesti di nuovo.
+- **Video**: per le playlist "video" la schermata mostra il filmato (HLS) finché è visibile; a
+  schermo spento il servizio passa al solo audio (meno dati). Pulsante "Mostra il video".
+- La coda è salvata (`QueueStore.kt`) e torna, in pausa, alla riapertura.
+- Errori: video non riproducibile → salto al successivo (al massimo 5 di fila).
+
+Lato pagina, dentro l'app il pannello del lettore mostra "Apri il lettore" invece dei comandi web
+(`NativePlayerNotice.tsx`). Impostazioni → Lettore → "Player di YouTube" torna al player web.
 
 ## File
 
-| File                                                       | Contenuto                                                        |
-| ---------------------------------------------------------- | ---------------------------------------------------------------- |
-| `android/app/build.gradle`                                 | Legge nome, URL, package, versione e colore da `app.config.json` |
-| `android/app/src/main/AndroidManifest.xml`                 | Launcher TWA, splash, link verificati                            |
-| `android/app/src/main/res/mipmap-*`, `drawable/splash.png` | Icone generate da `npm run icons`                                |
-| `android/build.gradle`                                     | Versione dell'Android Gradle Plugin                              |
-| `.github/workflows/android.yml`                            | Build in CI e pubblicazione della Release                        |
+| File                                                       | Contenuto                                                                  |
+| ---------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `android/app/build.gradle`                                 | Identità da `app.config.json`, dipendenze (versioni compatibili con AGP 8) |
+| `android/app/src/main/AndroidManifest.xml`                 | Launcher TWA, link verificati, `PlayerActivity`, `PlaybackService`         |
+| `android/app/src/main/java/.../player/Handoff.kt`          | Formato della coda (uguale a `src/domain/handoff-payload.ts`)              |
+| `android/app/src/main/java/.../player/PlaybackService.kt`  | Lettore: coda, video sì/no, errori, salvataggio                            |
+| `android/app/src/main/java/.../player/StreamResolver.kt`   | NewPipeExtractor: URL dell'audio e manifest HLS, con cache                 |
+| `android/app/src/main/java/.../player/PlayerActivity.kt`   | Schermata: riceve la coda dalla pagina, comanda il servizio                |
+| `android/app/src/main/java/.../player/ui/PlayerScreen.kt`  | Interfaccia Compose (accessibile, tema "Notturno")                         |
+| `android/app/src/main/res/values*/strings.xml`             | Testi del lettore nativo (italiano, inglese)                               |
+| `android/app/src/test/.../HandoffJsonTest.kt`              | Test del formato della coda (in CI)                                        |
+| `android/app/src/main/res/mipmap-*`, `drawable/splash.png` | Icone generate da `npm run icons`                                          |
+| `android/build.gradle`                                     | Versioni di Android Gradle Plugin e Kotlin                                 |
+| `.github/workflows/android.yml`                            | Test, build in CI e pubblicazione della Release                            |
 
-Versioni: Android Gradle Plugin 8.13.2, Gradle 8.14.3, JDK 17, compileSdk/targetSdk 36, minSdk 24 (Android 7.0 o successivo, richiesto da
-android-browser-helper).
+Versioni: Android Gradle Plugin 8.13.2, Kotlin 2.4.21, Gradle 8.14.3, JDK 17, compileSdk/targetSdk
+36, minSdk 24 (Android 7.0 o successivo). Media3 1.11.1, Compose BOM 2026.06.01 (Compose 1.11), OkHttp 5.4.0,
+NewPipeExtractor v0.27.1. Le librerie AndroidX più nuove (androidx.core 1.19+, Compose 1.12+, OkHttp 5.5+)
+richiedono compileSdk 37 e AGP 9: aggiornale insieme ([decisione 0010](../decisioni/0010-agp-8.md)).
+
+**Licenza**: NewPipeExtractor è GPL-3.0, quindi l'APK e la cartella `android/` sono distribuiti con
+licenza GPL-3.0-or-later (`android/LICENSE`). Il resto del repository è MIT.
 
 ## Pubblicare un nuovo APK
 

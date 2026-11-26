@@ -11,14 +11,15 @@ Tempo: ~10 minuti. Costo: gratis.
 
 L'accesso è **attivo** dalla versione 1.2.0. Configurazione esistente:
 
-| Cosa                  | Valore                                                                |
-| --------------------- | --------------------------------------------------------------------- |
-| Progetto Google Cloud | `Playlist Player` (ID `playlist-player-515912`), senza organizzazione |
-| API abilitata         | YouTube Data API v3                                                   |
-| Schermata di consenso | Pubblico **Esterno**, stato **Test**, ambito `youtube.readonly`       |
-| Utenti di test        | l'account Google del proprietario del canale                          |
-| Client OAuth          | "Playlist Player web" (applicazione web), ID in `app.config.json`     |
-| Origini autorizzate   | `https://progliodario.github.io`, `http://localhost:5173`             |
+| Cosa                    | Valore                                                                             |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| Progetto Google Cloud   | `Playlist Player` (ID `playlist-player-515912`), senza organizzazione              |
+| API abilitata           | YouTube Data API v3                                                                |
+| Schermata di consenso   | Pubblico **Esterno**, stato **Test**, ambito `youtube.readonly`                    |
+| Utenti di test          | l'account Google del proprietario del canale                                       |
+| Client OAuth            | "Playlist Player web" (applicazione web), ID in `app.config.json`                  |
+| Origini autorizzate     | `https://progliodario.github.io`, `http://localhost:5173`                          |
+| URI di reindirizzamento | `http://127.0.0.1:43117/callback` (app Windows, `desktop/main/google-sign-in.cjs`) |
 
 Cose che potresti voler fare:
 

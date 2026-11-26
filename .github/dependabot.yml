@@ -17,6 +17,20 @@ updates:
       - dependency-name: '@types/node'
         update-types: [version-update:semver-major]
 
+  # Windows app (Electron). The Windows workflow builds the installer on the PR.
+  - package-ecosystem: npm
+    directory: /desktop
+    schedule:
+      interval: monthly
+    groups:
+      desktop-minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
+
   - package-ecosystem: github-actions
     directory: /
     schedule:

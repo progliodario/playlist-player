@@ -1,6 +1,7 @@
 # 0011 — Niente blocco delle pubblicità né riproduzione in background
 
-- **Stato**: accettata
+- **Stato**: superata dalla [0015](0015-lettori-senza-pubblicita.md) (il 2026-11-26, su richiesta
+  esplicita del proprietario). Vale ancora per la versione web nel browser.
 - **Data**: 2026-11-26
 
 ## Contesto
@@ -13,4 +14,5 @@ L'app usa solo il player ufficiale e non forza la riproduzione nascosta. Offre l
 
 ## Conseguenze
 
-Documentato per gli utenti in [../utente/domande-frequenti.md](../utente/domande-frequenti.md) e per chi sviluppa in [../sviluppo/regole-youtube.md](../sviluppo/regole-youtube.md).
+Il proprietario ha poi chiesto di procedere comunque: le app Android e Windows hanno ora un lettore
+proprio (decisione 0015). Nel browser restano valide le regole qui sopra.

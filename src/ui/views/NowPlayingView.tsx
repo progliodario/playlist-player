@@ -3,6 +3,7 @@ import { routeHref } from '../../app/router.ts';
 import { parsePlaylistKey } from '../../domain/types.ts';
 import { youtubeMusicUrl } from '../../domain/youtube-urls.ts';
 import { useStrings } from '../../i18n/index.ts';
+import { playbackTarget } from '../../player/player-engine.ts';
 import { useCurrentTrack, usePlayerStore } from '../../player/player-store.ts';
 import { hueFromString } from '../art/art-math.ts';
 import { Vinyl } from '../art/Vinyl.tsx';
@@ -10,6 +11,7 @@ import { ExternalLink } from '../components/ExternalLink.tsx';
 import { StatusMessage } from '../components/StatusMessage.tsx';
 import { trackSubtitle } from '../display.ts';
 import { Icon } from '../icons.tsx';
+import { NativePlayerNotice } from '../player/NativePlayerNotice.tsx';
 import { PlayerControls, VolumeControl } from '../player/PlayerControls.tsx';
 import { QueueList } from '../player/QueueList.tsx';
 
@@ -60,8 +62,14 @@ export function NowPlayingView() {
         </div>
       </div>
       <div className="now-playing-view__controls">
-        <PlayerControls />
-        <VolumeControl />
+        {playbackTarget === 'android' ? (
+          <NativePlayerNotice />
+        ) : (
+          <>
+            <PlayerControls />
+            <VolumeControl />
+          </>
+        )}
         <ExternalLink className="chip-link" href={youtubeMusicUrl(track.videoId, playlistId)}>
           <Icon name="headphones" size={16} /> {t.player.openInYouTubeMusic}
         </ExternalLink>

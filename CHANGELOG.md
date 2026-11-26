@@ -5,6 +5,22 @@ Tutte le modifiche rilevanti, dalla più recente. Formato ispirato a
 
 ## [Non rilasciato]
 
+## [1.3.0] — 2026-11-26
+
+### Aggiunto
+
+- **App Android con lettore senza pubblicità**: premendo play si apre il lettore dell'app, che
+  continua a schermo spento, con i comandi nella notifica, nella schermata di blocco e sulle cuffie
+  Bluetooth. Video delle playlist di video quando la schermata è aperta, solo audio a schermo spento.
+- **App per Windows** (`playlist-player-setup.exe`): stesso sito, con lettore senza pubblicità che
+  continua con la finestra ridotta a icona; video in alta qualità; tasti multimediali e riquadro
+  multimediale di Windows; accesso con Google tramite il browser predefinito.
+- Impostazioni → Lettore: "Senza pubblicità" o "Player di YouTube" (nelle app).
+
+### Corretto
+
+- I titoli lunghi delle playlist non vanno più a capo a metà parola.
+
 ## [1.2.0] — 2026-11-26
 
 ### Aggiunto

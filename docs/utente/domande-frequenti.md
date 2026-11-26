@@ -1,26 +1,36 @@
 # Domande frequenti
 
-## Perché ci sono le pubblicità? Si possono togliere?
+## Come tolgo le pubblicità? Come ascolto a schermo spento?
 
-L'app riproduce i video con il **player ufficiale di YouTube**: è l'unico modo consentito per
-mostrare video di YouTube in un'altra app. Le regole di YouTube per gli sviluppatori vietano
-esplicitamente di **bloccare le pubblicità** che il player mostrerebbe.
+Usa le **app per Android o per Windows**
+([installazione](installazione.md)): hanno un lettore proprio che non mostra pubblicità e continua a
+suonare a schermo spento (Android) o con la finestra ridotta a icona (Windows). Sul telefono i
+comandi sono nella notifica, nella schermata di blocco e sulle cuffie Bluetooth; su Windows
+funzionano i tasti multimediali della tastiera.
 
-Il modo lecito per non vederle è **YouTube Premium** (o YouTube Music Premium): se hai fatto
-l'accesso a YouTube con l'account Premium **nello stesso browser** in cui usi l'app (Chrome o Edge;
-su Android è Chrome), le pubblicità spariscono anche qui.
-In app: **Impostazioni** → _Pubblicità e ascolto a schermo spento_ → **Accedi a YouTube in questo
-browser**.
+Nel **browser** non si può: una pagina web può usare solo il player di YouTube, che mostra le sue
+pubblicità e si ferma quando la pagina non è visibile. Lì le pubblicità spariscono solo con
+YouTube Premium (accesso a YouTube nello stesso browser).
 
-## Perché la musica si ferma a schermo spento?
+## Il lettore dell'app salta tutti i brani o non parte
 
-Per lo stesso motivo: le regole di YouTube vietano di far suonare il player quando non è
-visibile (app in background, schermo spento o player nascosto). L'app non lo forza.
+YouTube cambia spesso il modo in cui fornisce i video e ogni tanto il lettore senza pubblicità va
+aggiornato:
 
-Per ascoltare a schermo spento usa il pulsante **Apri in YouTube Music** nel lettore: continua lo
-stesso brano (e la stessa playlist) nell'app ufficiale, che con Premium suona anche in background.
+- **Windows**: il componente che legge YouTube (yt-dlp) si aggiorna da solo una volta al giorno.
+  Chiudi e riapri l'app.
+- **Android**: installa l'APK più recente dalla pagina dei download.
+- Nel frattempo: **Impostazioni** → **Lettore** → **Player di YouTube** → **Ricarica e applica**
+  (con le pubblicità, finché non arriva la correzione).
 
-Su computer, con la finestra ridotta a icona, il comportamento dipende dal browser.
+Un singolo brano saltato invece è normale: alcuni video non sono disponibili (rimossi, privati o
+bloccati nel tuo paese).
+
+## Nell'app Android il video non si vede
+
+Nelle playlist di video il filmato si vede mentre la schermata del lettore è aperta; per le
+playlist di musica premi **Mostra il video**. A schermo spento il lettore continua con il solo audio
+(consuma meno dati) e riprende il video quando torni alla schermata.
 
 ## Ho creato una playlist su YouTube: quando la vedo nell'app?
 
@@ -35,7 +45,8 @@ La playlist deve essere **pubblica**. Per quelle private serve l'accesso con Goo
 
 Serve l'accesso con Google: **Libreria** o **Impostazioni** → **Accedi con Google** (una volta sola;
 poi al massimo un clic su "Riconnetti" quando la sessione scade, dopo un'ora). L'accesso è in sola
-lettura: l'app può solo leggere le tue playlist, non modificarle.
+lettura: l'app può solo leggere le tue playlist, non modificarle. Nell'app per Windows l'accesso si
+fa nel browser predefinito, che si apre da solo: alla fine torna all'app.
 
 La prima volta Google mostra **"Google non ha verificato questa app"**: è normale per un'app
 personale come questa. Premi **Continua**, scegli il canale se ne hai più di uno e consenti la

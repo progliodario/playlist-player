@@ -1,0 +1,20 @@
+{
+  // Type-checks the JavaScript of the Windows app (// @ts-check + JSDoc types).
+  // Run with `npm run typecheck` inside desktop/.
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "CommonJS",
+    "moduleResolution": "node10",
+    "lib": ["ES2023", "DOM"],
+    "types": ["node"],
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "ignoreDeprecations": "6.0"
+  },
+  "include": ["main/**/*.cjs", "preload.cjs", "scripts/**/*.cjs", "electron-builder.config.cjs"]
+}

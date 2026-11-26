@@ -4,19 +4,16 @@
  * Responsibilities: create the iframe lazily inside the host element provided by the
  * UI (<PlayerViewport/>), load/play/pause/seek, and forward player events.
  * It knows nothing about queues or playlists: that is src/player/player-store.ts.
+ * Used in browsers and whenever the user picks the YouTube player (see player-engine.ts).
  *
  * YouTube policy reminders (docs/sviluppo/regole-youtube.md):
  *  - the player must stay visible and at least 200x200 px while playing;
  *  - never hide it to play "audio only", never download or cache media.
  */
+import type { PlayerEngine, PlayerEngineListener } from './player-engine.ts';
 import { basePlayerVars, loadYouTubeIframeApi } from './youtube-iframe-api.ts';
 
-export interface PlayerEngineListener {
-  onStateChange(state: number): void;
-  onError(code: number): void;
-}
-
-class YouTubePlayerEngine {
+export class YouTubePlayerEngine implements PlayerEngine {
   private host: HTMLElement | null = null;
   private player: YT.Player | null = null;
   private playerReady: Promise<YT.Player> | null = null;
@@ -45,7 +42,10 @@ class YouTubePlayerEngine {
     return this.player !== null;
   }
 
-  /** Loads a video. `autoplay` false only cues it (shows the thumbnail, no sound). */
+  /**
+   * Loads a video. `autoplay` false only cues it (shows the thumbnail, no sound).
+   * The YouTube player always shows the picture, so `options.video` is not used.
+   */
   async load(videoId: string, startSeconds = 0, autoplay = true): Promise<void> {
     const player = await this.ensurePlayer();
     const request = { videoId, startSeconds: Math.max(0, Math.floor(startSeconds)) };
@@ -129,6 +129,3 @@ class YouTubePlayerEngine {
     return this.playerReady;
   }
 }
-
-/** The app-wide player instance. */
-export const playerEngine = new YouTubePlayerEngine();

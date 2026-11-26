@@ -1,0 +1,71 @@
+# Builds the Windows app (desktop/, Electron, see docs/sviluppo/app-windows.md).
+#
+#  - push of a tag "vX.Y.Z" -> builds the installer and attaches it to the GitHub Release
+#    (playlist-player-setup.exe; the Android workflow attaches the APK to the same Release)
+#  - "Run workflow" from the Actions tab -> builds the installer as a downloadable artifact
+#  - pull request touching desktop/ -> type check, tests and a test build
+name: Windows app
+
+on:
+  push:
+    tags: ['v*']
+  pull_request:
+    paths: ['desktop/**', 'app.config.json', '.github/workflows/desktop.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  installer:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
+      - name: Check that the tag matches the version
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('../package.json').version")
+          if [ "$GITHUB_REF_NAME" != "v$VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $VERSION"
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: node scripts/prepare.cjs
+      - run: npm run check
+      - run: npm run dist
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: playlist-player-windows
+          path: desktop/dist/playlist-player-setup.exe
+
+      - name: Attach to the GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # The Android workflow may create the Release at the same time: retry a few times.
+        run: |
+          NOTES="Android: scarica playlist-player-VERSIONE.apk, aprilo e consenti l'installazione (serve Google Chrome). Windows: scarica playlist-player-setup.exe e aprilo (se Windows avvisa: Ulteriori informazioni, Esegui comunque). Entrambe hanno il lettore senza pubblicità che continua in background. Guida: docs/utente/installazione.md"
+          for attempt in 1 2 3 4 5; do
+            if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+              gh release upload "$GITHUB_REF_NAME" dist/playlist-player-setup.exe --clobber && exit 0
+            elif gh release create "$GITHUB_REF_NAME" dist/playlist-player-setup.exe \
+                --title "$GITHUB_REF_NAME" --notes "$NOTES" --generate-notes; then
+              exit 0
+            fi
+            sleep $((attempt * 20))
+          done
+          exit 1

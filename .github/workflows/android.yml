@@ -1,4 +1,5 @@
-# Builds the Android APK (Trusted Web Activity wrapper, see docs/sviluppo/android.md).
+# Builds the Android APK (Trusted Web Activity + native ad-free player, see
+# docs/sviluppo/android.md) after running its unit tests.
 #
 #  - push of a tag "vX.Y.Z" -> builds and publishes a GitHub Release with the APK
 #    (the tag must match android.versionName in app.config.json)
@@ -59,7 +60,7 @@ jobs:
             echo "::warning::No signing key in secrets: the APK is signed with a temporary debug key."
           fi
 
-      - name: Build APK
+      - name: Unit tests and APK
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
@@ -67,11 +68,11 @@ jobs:
         # Up to 3 attempts: dependency downloads can fail with temporary HTTP 429 errors.
         run: |
           for attempt in 1 2; do
-            if gradle -p android assembleRelease --no-daemon; then exit 0; fi
+            if gradle -p android testReleaseUnitTest assembleRelease --no-daemon; then exit 0; fi
             echo "::warning::Gradle attempt $attempt failed, retrying in $((attempt * 60))s"
             sleep $((attempt * 60))
           done
-          gradle -p android assembleRelease --no-daemon --stacktrace
+          gradle -p android testReleaseUnitTest assembleRelease --no-daemon --stacktrace
 
       - name: Rename APK
         run: cp android/app/build/outputs/apk/release/app-release.apk "playlist-player-${{ steps.version.outputs.name }}.apk"
@@ -111,11 +112,15 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
+        # The Windows workflow may create the Release at the same time: retry a few times.
         run: |
-          NOTES="Installazione su Android: scarica il file .apk qui sotto, aprilo e consenti l'installazione da questa fonte. Serve Google Chrome. Dettagli: docs/sviluppo/android.md"
-          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" playlist-player-*.apk --clobber
-          else
-            gh release create "$GITHUB_REF_NAME" playlist-player-*.apk \
-              --title "$GITHUB_REF_NAME" --notes "$NOTES" --generate-notes
-          fi
+          NOTES="Android: scarica playlist-player-VERSIONE.apk, aprilo e consenti l'installazione (serve Google Chrome). Windows: scarica playlist-player-setup.exe e aprilo (se Windows avvisa: Ulteriori informazioni, Esegui comunque). Entrambe hanno il lettore senza pubblicità che continua in background. Guida: docs/utente/installazione.md"
+          for attempt in 1 2 3 4 5; do
+            if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+              gh release upload "$GITHUB_REF_NAME" playlist-player-*.apk --clobber && exit 0
+            elif gh release create "$GITHUB_REF_NAME" playlist-player-*.apk                 --title "$GITHUB_REF_NAME" --notes "$NOTES" --generate-notes; then
+              exit 0
+            fi
+            sleep $((attempt * 20))
+          done
+          exit 1

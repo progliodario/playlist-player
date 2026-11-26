@@ -128,6 +128,9 @@ export const en: Strings = {
       artist ? `Now playing: ${title}, by ${artist}` : `Now playing: ${title}`,
     iframeTitle: (title) => `YouTube video: ${title}`,
     iframeTitleIdle: 'YouTube player',
+    nativeHint:
+      'Playing in the app’s own player: no ads, keeps going with the screen off, controls on the lock screen.',
+    openNativePlayer: 'Open the player',
   },
 
   settings: {
@@ -157,14 +160,22 @@ export const en: Strings = {
     clientIdHelp: 'Leave empty to use the project one.',
     save: 'Save',
 
-    listening: 'Ads and listening with the screen off',
-    listeningIntro:
-      'Videos play in the official YouTube player, as YouTube rules require: the app cannot remove ads or play with the player hidden.',
+    listening: 'Ads and background listening',
+    listeningWeb:
+      'In a browser a page can only use the YouTube player: with its ads and only while the page is visible. The Android and Windows apps have their own player, without ads, that keeps playing with the screen off or the window minimized.',
+    downloadApps: 'Download the apps (Android and Windows)',
     listeningPremium:
-      'With YouTube Premium (or YouTube Music Premium) ads disappear here too: just be signed in to YouTube with the same account in this browser.',
-    listeningBackground:
-      'To listen with the screen off use the “Open in YouTube Music” button in the player: the official app, with Premium, keeps playing in the background.',
+      'With the YouTube player ads disappear only with YouTube Premium, when you are signed in to YouTube with the same account in this browser.',
     signInYouTube: 'Sign in to YouTube in this browser',
+    playbackMode: 'Player',
+    playbackAdFree: 'Ad-free',
+    playbackYouTube: 'YouTube player',
+    playbackHelpAndroid:
+      'Ad-free: no ads, keeps playing with the screen off, controls on the lock screen and on Bluetooth headphones. If it ever stops working (YouTube changes often), pick “YouTube player” until a new version of the app is out.',
+    playbackHelpDesktop:
+      'Ad-free: no ads, keeps playing with the window minimized, media keys and Windows controls. The part that reads YouTube (yt-dlp) updates itself; if it ever stops working, pick “YouTube player”.',
+    playbackPending: 'The new player is used after the app reloads.',
+    playbackApply: 'Reload and apply',
 
     shortcuts: 'Keyboard shortcuts',
     shortcutsToggle: 'Enable single-key shortcuts',
@@ -200,17 +211,19 @@ export const en: Strings = {
     installButton: 'Install',
     installed: 'The app is installed on this device.',
     installWindows:
-      'Windows: open this page in Edge or Chrome, then menu ⋯ → "Install this site as an app".',
+      'Windows: download and open playlist-player-setup.exe from the Releases page (ad-free player). Alternatively: Edge or Chrome → menu ⋯ → "Install this site as an app".',
     installAndroid:
-      'Android: download the APK from the project Releases page, or in Chrome menu ⋮ → "Install app".',
-    releasesLink: 'Releases page (Android APK)',
+      'Android: download and install the APK from the Releases page (ad-free player, also with the screen off).',
+    releasesLink: 'Releases page (Android and Windows apps)',
+    runningDesktop: (version) => `You are using the Windows app, version ${version}.`,
+    runningAndroid: 'You are using the Android app.',
 
     about: 'About',
     version: (version, date) => `Version ${version} · built on ${date}`,
     sourceCode: 'Source code on GitHub',
     accessibility: 'Accessibility statement',
     disclaimer:
-      'Unofficial app, not affiliated with YouTube or Google. Videos play in the official YouTube player.',
+      'Unofficial app, not affiliated with YouTube or Google. Content stays on YouTube: the app does not download or keep videos.',
     clearData: 'Clear local data',
     clearDataConfirm:
       'Delete settings, queue and added playlists on this device? This cannot be undone.',

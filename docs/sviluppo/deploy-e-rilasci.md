@@ -2,7 +2,8 @@
 
 **In breve**: tutto avviene con GitHub Actions, nessun server. Il sito si pubblica a ogni push su
 `main` e, in automatico, ogni volta che le playlist pubbliche del canale cambiano (controllo ogni
-15 minuti). L'APK si pubblica con un tag `vX.Y.Z`.
+15 minuti). Con un tag `vX.Y.Z` si pubblicano l'APK Android e l'installer Windows nella stessa
+Release.
 
 ## Workflow
 
@@ -10,7 +11,8 @@
 | ----------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | **CI** (`ci.yml`)                         | ogni push e pull request                     | `npm run check` (tipi, lint, formattazione, test) + build                                  |
 | **Deploy to GitHub Pages** (`deploy.yml`) | push su `main`, ogni 15 minuti, manuale      | genera il catalogo; se è cambiato (o non è un controllo programmato) build e pubblicazione |
-| **Android APK** (`android.yml`)           | tag `v*`, PR che toccano `android/`, manuale | build e firma dell'APK; con un tag crea la Release                                         |
+| **Android APK** (`android.yml`)           | tag `v*`, PR che toccano `android/`, manuale | test, build e firma dell'APK; con un tag lo allega alla Release                            |
+| **Windows app** (`desktop.yml`)           | tag `v*`, PR che toccano `desktop/`, manuale | tipi, test e installer `playlist-player-setup.exe`; con un tag lo allega alla Release      |
 
 Esecuzione manuale: tab **Actions** → scegli il workflow → **Run workflow**.
 
@@ -40,8 +42,8 @@ errori. Se succede spesso, aumenta l'intervallo nel `cron` di `deploy.yml`.
    - `app.config.json` → `android.versionName` e `android.versionCode` (+1)
 2. Aggiungi la sezione della versione in `CHANGELOG.md`.
 3. `npm run check`, commit, push su `main` → il sito si aggiorna.
-4. Nuovo APK: `git tag vX.Y.Z` e `git push origin vX.Y.Z` → Release con l'APK allegato.
-   Il workflow verifica che il tag corrisponda a `android.versionName`.
+4. App: `git tag vX.Y.Z` e `git push origin vX.Y.Z` → Release con l'APK e l'installer Windows.
+   I workflow verificano che il tag corrisponda a `android.versionName` e a `package.json`.
 
 ## Secrets del repository
 
@@ -54,5 +56,6 @@ Il client OAuth Google non è un segreto e sta in `app.config.json`.
 ## Aggiornamenti delle dipendenze
 
 Dependabot (`.github/dependabot.yml`) apre PR mensili. Unisci solo se la CI è verde (per
-`android/` anche il workflow Android). Gli aggiornamenti major esclusi sono motivati in
+`android/` anche il workflow Android, per `desktop/` il workflow Windows). Per le librerie Android
+controlla la nota sulle versioni in `android/app/build.gradle` (compileSdk 36 / AGP 8). Gli aggiornamenti major esclusi sono motivati in
 [../decisioni/](../decisioni/README.md).

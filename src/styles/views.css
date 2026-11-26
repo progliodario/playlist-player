@@ -260,6 +260,8 @@ h1[tabindex='-1']:focus-visible {
   flex-direction: column;
   gap: var(--space-2);
   min-width: 0;
+  /* The title scales with this column (cqi), so long names do not break mid-word. */
+  container-type: inline-size;
 }
 
 .playlist-hero__kind {
@@ -274,8 +276,9 @@ h1[tabindex='-1']:focus-visible {
 }
 
 .playlist-hero__title {
-  font-size: var(--text-hero);
+  font-size: min(var(--text-hero), 13cqi);
   font-weight: 800;
+  hyphens: auto;
   overflow-wrap: anywhere;
 }
 
@@ -423,6 +426,19 @@ h1[tabindex='-1']:focus-visible {
   border-radius: var(--radius-m);
   background: var(--gradient-brand);
   color: var(--accent-ink);
+}
+
+.settings-apply {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  padding: var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-m);
+}
+
+.settings-apply p {
+  margin: 0;
 }
 
 .settings-row {

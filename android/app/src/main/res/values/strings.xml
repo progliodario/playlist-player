@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Texts of the native player screen (Italian, the default). English: values-en/strings.xml.
+  The texts of the web app live in src/i18n/ instead. app_name comes from app.config.json.
+-->
+<resources>
+    <string name="player_title">Lettore</string>
+    <string name="player_now_playing">In riproduzione</string>
+    <string name="player_back">Torna alla libreria</string>
+    <string name="player_play">Riproduci</string>
+    <string name="player_pause">Pausa</string>
+    <string name="player_next">Successivo</string>
+    <string name="player_previous">Precedente</string>
+    <string name="player_shuffle">Riproduzione casuale</string>
+    <string name="player_repeat_off">Ripeti: disattivato</string>
+    <string name="player_repeat_all">Ripeti: tutta la coda</string>
+    <string name="player_repeat_one">Ripeti: brano corrente</string>
+    <string name="player_seek">Posizione nel brano</string>
+    <string name="player_seek_value">%1$s di %2$s</string>
+    <string name="player_show_video">Mostra il video</string>
+    <string name="player_video_description">Video: %1$s</string>
+    <string name="player_queue">Coda</string>
+    <string name="player_current">in riproduzione</string>
+    <string name="player_error">Questo video non si può riprodurre: passo al successivo.</string>
+    <string name="player_empty">Niente in riproduzione</string>
+    <string name="player_empty_hint">Torna alla libreria, scegli una playlist e premi Riproduci.</string>
+</resources>

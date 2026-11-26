@@ -6,7 +6,7 @@ Tre cartelle, una per pubblico. Ogni file è autonomo e inizia con un riassunto.
 
 | File                                                | Contenuto                                                                   |
 | --------------------------------------------------- | --------------------------------------------------------------------------- |
-| [installazione.md](utente/installazione.md)         | Installare l'app su Windows e Android                                       |
+| [installazione.md](utente/installazione.md)         | Installare le app per Windows e Android (senza pubblicità)                  |
 | [guida.md](utente/guida.md)                         | Come si usa: libreria, playlist, lettore, impostazioni, scorciatoie         |
 | [domande-frequenti.md](utente/domande-frequenti.md) | Pubblicità, schermo spento, nuove playlist, account Google, problemi comuni |
 | [accessibilita.md](utente/accessibilita.md)         | Dichiarazione di accessibilità                                              |
@@ -22,10 +22,12 @@ Prima di tutto leggi [AGENTS.md](../AGENTS.md) nella radice del progetto.
 | [lettore.md](sviluppo/lettore.md)                   | Come funziona la riproduzione (coda, eventi YouTube, errori)  |
 | [grafica.md](sviluppo/grafica.md)                   | Tema "Notturno"/"Alba", token, illustrazioni, regole di stile |
 | [accessibilita.md](sviluppo/accessibilita.md)       | Regole di accessibilità del codice e verifica manuale         |
-| [regole-youtube.md](sviluppo/regole-youtube.md)     | Vincoli imposti da YouTube (da non rimuovere)                 |
+| [app-native.md](sviluppo/app-native.md)             | Browser, app Android, app Windows: chi suona e dove           |
+| [regole-youtube.md](sviluppo/regole-youtube.md)     | Regole di YouTube, cosa rispetta l'app e rischi accettati     |
 | [account-google.md](sviluppo/account-google.md)     | Accesso con Google: configurazione attuale e come rifarla     |
 | [deploy-e-rilasci.md](sviluppo/deploy-e-rilasci.md) | GitHub Actions, GitHub Pages, versioni e Release              |
-| [android.md](sviluppo/android.md)                   | App Android (Trusted Web Activity), firma, APK                |
+| [android.md](sviluppo/android.md)                   | App Android: TWA + lettore nativo, firma, APK                 |
+| [app-windows.md](sviluppo/app-windows.md)           | App Windows (Electron): lettore, yt-dlp, installer            |
 
 ## `decisioni/` — perché il progetto è fatto così
 

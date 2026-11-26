@@ -1,6 +1,8 @@
 /**
  * Playback state and commands. Glue between the pure queue logic
- * (src/domain/queue.ts) and the YouTube player (./youtube-player-engine.ts).
+ * (src/domain/queue.ts) and the playback engine of this session (./player-engine.ts:
+ * YouTube player, ad-free stream player of the Windows app, or hand-off to the native
+ * player of the Android app).
  *
  * Two stores on purpose:
  *  - usePlayerStore: queue, status, volume... (persisted, changes rarely)
@@ -10,11 +12,13 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import * as Queue from '../domain/queue.ts';
-import type { Playlist, Track } from '../domain/types.ts';
+import type { Playlist, PlaylistKind, Track } from '../domain/types.ts';
 import { getStrings } from '../i18n/index.ts';
+import { openAndroidPlayer, playInAndroidApp } from '../platform/android-player.ts';
+import { effectiveKind, findSummary } from '../state/library-store.ts';
 import { safeStorage, STORAGE_KEYS } from '../state/storage-keys.ts';
+import { playbackTarget, playerEngine } from './player-engine.ts';
 import { YT_STATE } from './youtube-iframe-api.ts';
-import { playerEngine } from './youtube-player-engine.ts';
 
 export type PlaybackStatus = 'idle' | 'loading' | 'playing' | 'paused' | 'buffering' | 'ended';
 
@@ -106,6 +110,11 @@ export const usePlayerStore = create<PlayerState>()(
       togglePlay() {
         const { status, queue, loadedVideoId, playIntent } = get();
         if (!queue) return;
+        if (playbackTarget === 'android') {
+          // The native player owns playback: just bring it to the front.
+          openAndroidPlayer();
+          return;
+        }
         if (playIntent && status !== 'ended') {
           // Optimistic: during ads YouTube does not confirm with a PAUSED event.
           playerEngine.pause();
@@ -235,7 +244,14 @@ let lastResumeSave = 0;
 function loadCurrent(autoplay: boolean, startSeconds: number) {
   const queue = usePlayerStore.getState().queue;
   const track = queue ? Queue.currentTrack(queue) : null;
-  if (!track) return;
+  if (!queue || !track) return;
+  const kind = queueKind(queue);
+  if (playbackTarget === 'android') {
+    usePlayerStore.setState({ status: 'idle', playIntent: false, loadedVideoId: null });
+    usePlayerClock.setState({ currentTime: startSeconds, duration: track.durationSeconds ?? 0 });
+    playInAndroidApp(queue, { kind, positionSeconds: startSeconds, autoplay });
+    return;
+  }
   usePlayerStore.setState({
     status: autoplay ? 'loading' : 'paused',
     playIntent: autoplay,
@@ -243,13 +259,24 @@ function loadCurrent(autoplay: boolean, startSeconds: number) {
   });
   usePlayerClock.setState({ currentTime: startSeconds, duration: track.durationSeconds ?? 0 });
   playerEngine.setTitle(getStrings().player.iframeTitle(track.title || track.videoId));
-  playerEngine.load(track.videoId, startSeconds, autoplay).catch(() => {
-    usePlayerStore.setState({
-      status: 'paused',
-      playIntent: false,
-      lastError: { code: -1, videoId: track.videoId, gaveUp: true },
+  playerEngine
+    .load(track.videoId, startSeconds, autoplay, { video: kind === 'video' })
+    .catch(() => {
+      usePlayerStore.setState({
+        status: 'paused',
+        playIntent: false,
+        lastError: { code: -1, videoId: track.videoId, gaveUp: true },
+      });
     });
-  });
+  const upcoming = Queue.next(queue, 'ended');
+  const nextTrack = upcoming ? Queue.currentTrack(upcoming) : null;
+  if (nextTrack && nextTrack.videoId !== track.videoId) playerEngine.prefetch?.(nextTrack.videoId);
+}
+
+/** Music or video, as shown for the playlist the queue comes from (video when unknown). */
+function queueKind(queue: Queue.QueueState): PlaylistKind {
+  const summary = queue.sourceKey ? findSummary(queue.sourceKey) : null;
+  return summary ? effectiveKind(summary) : 'video';
 }
 
 playerEngine.setListener({

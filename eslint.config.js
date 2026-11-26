@@ -10,7 +10,18 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist', 'dev-dist', 'coverage', 'android', 'public/catalog'] },
+  {
+    ignores: [
+      'dist',
+      'dev-dist',
+      'coverage',
+      'android',
+      'public/catalog',
+      'desktop/node_modules',
+      'desktop/dist',
+      'desktop/generated',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -25,6 +36,12 @@ export default tseslint.config(
   {
     files: ['src/**/*.tsx'],
     ...jsxA11y.configs.strict,
+  },
+  {
+    // Windows app (Electron main process and preload): CommonJS for Node.js.
+    files: ['desktop/**/*.cjs'],
+    languageOptions: { globals: globals.node, sourceType: 'commonjs' },
+    rules: { '@typescript-eslint/no-require-imports': 'off' },
   },
   {
     files: ['scripts/**/*.ts', 'vite.config.ts', 'eslint.config.js'],

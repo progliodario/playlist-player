@@ -3,6 +3,7 @@ import { routeHref } from '../../app/router.ts';
 import { parsePlaylistKey } from '../../domain/types.ts';
 import { videoUrl, youtubeMusicUrl } from '../../domain/youtube-urls.ts';
 import { useStrings } from '../../i18n/index.ts';
+import { playbackTarget } from '../../player/player-engine.ts';
 import { useCurrentTrack, usePlayerStore } from '../../player/player-store.ts';
 import { useEffectiveKind, useSummary } from '../../state/library-store.ts';
 import { CassetteArt } from '../art/CassetteArt.tsx';
@@ -12,6 +13,7 @@ import { Vinyl } from '../art/Vinyl.tsx';
 import { ExternalLink } from '../components/ExternalLink.tsx';
 import { playlistTitle, trackSubtitle } from '../display.ts';
 import { Icon } from '../icons.tsx';
+import { NativePlayerNotice } from './NativePlayerNotice.tsx';
 import { PlayerControls, VolumeControl } from './PlayerControls.tsx';
 import { PlayerViewport } from './PlayerViewport.tsx';
 import { ProgressBar } from './ProgressBar.tsx';
@@ -24,6 +26,8 @@ import { QueueList } from './QueueList.tsx';
  * Music playlists get a square, album-like player on phones (still >= 200x200 px).
  * The stage is tinted with the hue of the playing playlist (--hue).
  * `showQueue` is false on the "now playing" page, which shows the full queue itself.
+ * Inside the Android app (ad-free mode) the native player plays: the panel only shows
+ * what was sent to it and a button to open it.
  */
 export function NowPlayingPanel({ showQueue = true }: { showQueue?: boolean }) {
   const t = useStrings();
@@ -37,10 +41,11 @@ export function NowPlayingPanel({ showQueue = true }: { showQueue?: boolean }) {
   const sourceTitle = summary ? playlistTitle(summary, t) : (queue?.sourceTitle ?? null);
   const hue = hueFromString(queue?.sourceKey ?? 'idle');
   const playlistId = queue?.sourceKey ? parsePlaylistKey(queue.sourceKey)?.id : undefined;
+  const native = playbackTarget === 'android';
 
   return (
     <aside
-      className={`now-playing now-playing--${kind} ${queue ? '' : 'is-empty'} ${playing ? 'is-playing' : ''}`}
+      className={`now-playing now-playing--${kind} ${queue ? '' : 'is-empty'} ${playing ? 'is-playing' : ''} ${native ? 'now-playing--native' : ''}`}
       aria-label={t.player.region}
       style={{ '--hue': hue } as CSSProperties}
     >
@@ -78,20 +83,27 @@ export function NowPlayingPanel({ showQueue = true }: { showQueue?: boolean }) {
               )}
             </div>
           </div>
-          <div className="now-playing__progress">
-            <ProgressBar />
-          </div>
-          <div className="now-playing__controls">
-            <div className="phone-only">
-              <PlayerControls compact />
+          {native && <NativePlayerNotice />}
+          {!native && (
+            <div className="now-playing__progress">
+              <ProgressBar />
             </div>
-            <div className="desktop-only">
-              <PlayerControls />
+          )}
+          {!native && (
+            <div className="now-playing__controls">
+              <div className="phone-only">
+                <PlayerControls compact />
+              </div>
+              <div className="desktop-only">
+                <PlayerControls />
+              </div>
             </div>
-          </div>
-          <div className="now-playing__volume desktop-only">
-            <VolumeControl />
-          </div>
+          )}
+          {!native && (
+            <div className="now-playing__volume desktop-only">
+              <VolumeControl />
+            </div>
+          )}
           <div className="now-playing__links desktop-only">
             <ExternalLink className="chip-link" href={youtubeMusicUrl(track.videoId, playlistId)}>
               <Icon name="headphones" size={16} /> {t.player.openInYouTubeMusic}

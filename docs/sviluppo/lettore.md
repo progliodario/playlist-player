@@ -1,8 +1,9 @@
 # Il lettore
 
-**In breve**: un solo iframe YouTube per tutta l'app (`src/player/youtube-player-engine.ts`),
-guidato da uno store (`src/player/player-store.ts`) che applica la logica pura della coda
-(`src/domain/queue.ts`).
+**In breve**: uno store (`src/player/player-store.ts`) applica la logica pura della coda
+(`src/domain/queue.ts`) e comanda il **motore** di questa sessione (`src/player/player-engine.ts`):
+nel browser un solo iframe YouTube, nell'app Windows un `<video>` senza pubblicità, nell'app
+Android il lettore nativo (la pagina gli passa la coda). Panoramica: [app-native.md](app-native.md).
 
 ## Pezzi
 
@@ -10,7 +11,10 @@ guidato da uno store (`src/player/player-store.ts`) che applica la logica pura d
 | ------------------------------------- | -------------------------------------------------------------------- |
 | `src/domain/queue.ts`                 | Ordine, casuale, ripeti, avanti/indietro. Puro e testato.            |
 | `src/player/youtube-iframe-api.ts`    | Carica la IFrame API, costanti di stato/errore, parametri del player |
+| `src/player/player-engine.ts`         | Interfaccia comune dei motori e scelta del motore all'avvio          |
 | `src/player/youtube-player-engine.ts` | Crea l'iframe una volta, load/play/pause/seek, titolo dell'iframe    |
+| `src/player/stream-player-engine.ts`  | App Windows: `<video>` con audio `ppstream://` o video HLS (hls.js)  |
+| `src/platform/android-player.ts`      | App Android: apre il lettore nativo con la coda (`intent://`)        |
 | `src/player/player-store.ts`          | Stato e comandi; collega coda ↔ engine; salva la posizione           |
 | `src/ui/player/PlayerViewport.tsx`    | Il riquadro che ospita l'iframe (mai smontato)                       |
 | `src/ui/player/NowPlayingPanel.tsx`   | Pannello/striscia del lettore                                        |
@@ -46,8 +50,18 @@ solo su `status` il pulsante resterebbe bloccato. Pausa e play aggiornano `playI
 - I pulsanti dichiarano le scorciatoie (`aria-keyshortcuts`) se attive.
 - Il cambio brano viene annunciato (`useTrackAnnouncements` in `src/app/effects.ts`).
 
+## Motore "stream" (app Windows)
+
+- Emette gli stessi stati `YT_STATE` dell'iframe: lo store non cambia.
+- Musica: solo audio, con la copertina come sfondo del `<video>`; video: HLS con hls.js (caricato
+  solo qui, i browser non lo scaricano mai).
+- Se lo stream fallisce (URL scaduto) lo richiede una volta con `refresh: true`, poi segnala
+  l'errore e lo store passa al brano successivo.
+- Il brano successivo viene preparato in anticipo (`prefetch`).
+- Gli eventi `pause` causati dal cambio di sorgente sono ignorati (`wantsPlay`).
+
 ## Regole YouTube che riguardano il lettore
 
-Player sempre visibile e ≥ 200×200 px, nessun elemento sopra l'iframe mentre suona, niente
-riproduzione nascosta o in background, niente blocco delle pubblicità →
-[regole-youtube.md](regole-youtube.md).
+Nel browser: player sempre visibile e ≥ 200×200 px, nessun elemento sopra l'iframe mentre suona,
+niente riproduzione nascosta, niente blocco delle pubblicità. Le app hanno il loro lettore
+(decisione 0015) → [regole-youtube.md](regole-youtube.md).

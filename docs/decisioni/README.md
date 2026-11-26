@@ -20,3 +20,4 @@ riga in questa tabella.
 | 0012 | [Catalogo controllato ogni 15 minuti, deploy solo se cambia](0012-catalogo-ogni-15-minuti.md)                 | 2026-11-26 |
 | 0013 | [Tema artistico "Notturno" con illustrazioni SVG nel codice](0013-tema-notturno-e-arte-svg.md)                | 2026-11-26 |
 | 0014 | [Accessibilità WCAG 2.2 AA verificata in CI](0014-accessibilita-wcag-22-aa.md)                                | 2026-11-26 |
+| 0015 | [Lettori senza pubblicità e in background nelle app](0015-lettori-senza-pubblicita.md) (sostituisce la 0011)  | 2026-11-26 |

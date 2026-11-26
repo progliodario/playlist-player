@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- English texts of the native player screen (Italian default: values/strings.xml). -->
+<resources>
+    <string name="player_title">Player</string>
+    <string name="player_now_playing">Now playing</string>
+    <string name="player_back">Back to the library</string>
+    <string name="player_play">Play</string>
+    <string name="player_pause">Pause</string>
+    <string name="player_next">Next</string>
+    <string name="player_previous">Previous</string>
+    <string name="player_shuffle">Shuffle</string>
+    <string name="player_repeat_off">Repeat: off</string>
+    <string name="player_repeat_all">Repeat: whole queue</string>
+    <string name="player_repeat_one">Repeat: current track</string>
+    <string name="player_seek">Position in the track</string>
+    <string name="player_seek_value">%1$s of %2$s</string>
+    <string name="player_show_video">Show the video</string>
+    <string name="player_video_description">Video: %1$s</string>
+    <string name="player_queue">Queue</string>
+    <string name="player_current">now playing</string>
+    <string name="player_error">This video cannot be played: skipping to the next one.</string>
+    <string name="player_empty">Nothing playing</string>
+    <string name="player_empty_hint">Go back to the library, pick a playlist and press Play.</string>
+</resources>

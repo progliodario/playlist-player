@@ -46,3 +46,8 @@ coverage/
 
 # Local copy of the Android signing key (secrets live in GitHub)
 .signing/
+
+# Windows app (desktop/): dependencies, build output, generated identity
+desktop/node_modules/
+desktop/dist/
+desktop/generated/

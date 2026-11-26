@@ -36,6 +36,16 @@ nell'app entro circa 15-20 minuti, anche con l'app aperta.
 | Volume, schermo intero | Solo su computer (sul telefono usa i tasti del volume)        |
 | Apri in YouTube Music  | Continua lo stesso brano nell'app ufficiale                   |
 
+Nelle **app Android e Windows** il lettore è senza pubblicità e continua in background.
+
+- **Android**: premendo play si apre la schermata del lettore (copertina o video, comandi, coda).
+  **Torna alla libreria** riporta alla lista; la musica continua. Nella libreria il pannello del
+  lettore mostra **Apri il lettore**. Comandi anche nella notifica, nella schermata di blocco e
+  sulle cuffie Bluetooth. **Mostra il video** accende o spegne il filmato.
+- **Windows**: tutto come nel sito; la musica continua con la finestra ridotta a icona e si
+  comanda anche con i tasti multimediali.
+- **Impostazioni** → **Lettore**: "Senza pubblicità" (predefinito) o "Player di YouTube".
+
 L'app ricorda coda e posizione: alla riapertura premi play e riparte da dove eri.
 Se un video non si può riprodurre fuori da YouTube viene saltato e segnalato.
 
