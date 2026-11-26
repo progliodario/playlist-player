@@ -1,9 +1,12 @@
 // Versions are pinned on purpose. When upgrading the Android Gradle Plugin, also check
 // the Gradle version in .github/workflows/android.yml (compatibility table:
 // https://developer.android.com/build/releases/gradle-plugin#updating-gradle).
+// AGP 9.5 needs Gradle 9.6+ and supports compileSdk up to 37 (decision 0010).
 plugins {
-    id 'com.android.application' version '8.13.2' apply false
-    // Kotlin + Compose compiler for the native player (android/app/src/main/java/.../player/).
+    id 'com.android.application' version '9.5.3' apply false
+    // AGP 9 compiles Kotlin by itself ("built-in Kotlin"). This line only pins the Kotlin
+    // version it uses; the app module must NOT apply org.jetbrains.kotlin.android.
     id 'org.jetbrains.kotlin.android' version '2.4.21' apply false
+    // Compose compiler for the native player screen; same version as Kotlin.
     id 'org.jetbrains.kotlin.plugin.compose' version '2.4.21' apply false
 }

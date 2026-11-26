@@ -13,8 +13,8 @@
 import groovy.json.JsonSlurper
 
 plugins {
+    // Kotlin is compiled by AGP itself (built-in Kotlin): no org.jetbrains.kotlin.android here.
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.compose'
 }
 
@@ -29,16 +29,18 @@ def launchUrl = "${appConfig.publicUrl}?shell=android"
 def keystorePath = System.getenv('ANDROID_KEYSTORE_PATH')
 
 android {
-    namespace 'io.github.progliodario.playlistplayer'
-    compileSdk 36
+    namespace = 'io.github.progliodario.playlistplayer'
+    // compileSdk 37 is needed by current AndroidX/OkHttp releases; targetSdk stays 36 so the
+    // app's runtime behaviour does not change until it is tested on Android 17.
+    compileSdk = 37
 
     defaultConfig {
-        applicationId appConfig.android.applicationId
+        applicationId = appConfig.android.applicationId
         // android-browser-helper 2.8.0 requires Android 7.0 (API 24) or newer.
-        minSdk 24
-        targetSdk 36
-        versionCode appConfig.android.versionCode as int
-        versionName appConfig.android.versionName
+        minSdk = 24
+        targetSdk = 36
+        versionCode = appConfig.android.versionCode as int
+        versionName = appConfig.android.versionName
 
         manifestPlaceholders = [
             hostName : host,
@@ -57,10 +59,10 @@ android {
     signingConfigs {
         if (keystorePath) {
             release {
-                storeFile file(keystorePath)
-                storePassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
-                keyAlias System.getenv('ANDROID_KEY_ALIAS')
-                keyPassword System.getenv('ANDROID_KEY_PASSWORD')
+                storeFile = file(keystorePath)
+                storePassword = System.getenv('ANDROID_KEYSTORE_PASSWORD')
+                keyAlias = System.getenv('ANDROID_KEY_ALIAS')
+                keyPassword = System.getenv('ANDROID_KEY_PASSWORD')
             }
         }
     }
@@ -68,21 +70,21 @@ android {
     buildTypes {
         release {
             // No code shrinking: NewPipeExtractor and Rhino use reflection.
-            minifyEnabled false
-            signingConfig keystorePath ? signingConfigs.release : signingConfigs.debug
+            minifyEnabled = false
+            signingConfig = keystorePath ? signingConfigs.release : signingConfigs.debug
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
         // NewPipeExtractor uses Java APIs missing on old Android versions.
-        coreLibraryDesugaringEnabled true
+        coreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
-        compose true
-        resValues true
+        compose = true
+        resValues = true
     }
 
     packaging {
@@ -105,14 +107,13 @@ kotlin {
     }
 }
 
-// Versions are pinned and chosen to work with compileSdk 36 / AGP 8 (decision 0010):
-// newer releases (androidx.core 1.19+, Compose 1.12+ = BOM 2026.08+, OkHttp 5.5+) need
-// compileSdk 37 and AGP 9. The build fails at checkReleaseAarMetadata if one sneaks in.
+// Versions are pinned (Dependabot proposes updates). If a library needs a newer compileSdk
+// or AGP, the build fails at checkReleaseAarMetadata with the exact requirement.
 dependencies {
     // Trusted Web Activity: https://github.com/GoogleChrome/android-browser-helper
     implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.8.0'
     implementation 'androidx.appcompat:appcompat:1.8.0'
-    implementation 'androidx.core:core-ktx:1.17.0'
+    implementation 'androidx.core:core-ktx:1.19.1'
 
     // Native player: playback, background session, HLS video, OkHttp networking
     implementation 'androidx.media3:media3-exoplayer:1.11.1'
@@ -120,17 +121,17 @@ dependencies {
     implementation 'androidx.media3:media3-session:1.11.1'
     implementation 'androidx.media3:media3-ui:1.11.1'
     implementation 'androidx.media3:media3-datasource-okhttp:1.11.1'
-    implementation 'com.squareup.okhttp3:okhttp:5.4.0'
+    implementation 'com.squareup.okhttp3:okhttp:5.5.1'
     // Finds YouTube streams: https://github.com/TeamNewPipe/NewPipeExtractor (GPL-3.0)
     implementation 'com.github.TeamNewPipe:NewPipeExtractor:v0.27.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0'
 
     // Player screen (Jetpack Compose)
-    implementation platform('androidx.compose:compose-bom:2026.06.01')
+    implementation platform('androidx.compose:compose-bom:2026.11.01')
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.foundation:foundation'
     implementation 'androidx.compose.material3:material3'
-    implementation 'androidx.activity:activity-compose:1.12.0'
+    implementation 'androidx.activity:activity-compose:1.13.0'
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs_nio:2.1.5'
 
