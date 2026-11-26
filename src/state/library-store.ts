@@ -10,6 +10,7 @@ import {
   type PlaylistSummary,
   type SourceKind,
 } from '../domain/types.ts';
+import { catalogVersion, loadCatalogIndex } from '../sources/catalog/catalog-source.ts';
 import { SOURCE_ORDER, SOURCES } from '../sources/registry.ts';
 import { useSettingsStore } from './settings-store.ts';
 
@@ -30,36 +31,74 @@ export interface DetailState {
 interface LibraryState {
   sources: Record<SourceKind, SourceState>;
   details: Record<string, DetailState>;
+  /** Content hash (or date) of the channel catalog currently shown. */
+  catalogVersion: string | null;
+  /** When the catalog currently shown was generated (ISO), for the settings page. */
+  catalogGeneratedAt: string | null;
 
-  loadSource(kind: SourceKind): Promise<void>;
+  /** `silent`: keep showing the current list while reloading (no skeleton). */
+  loadSource(kind: SourceKind, options?: { silent?: boolean }): Promise<void>;
   loadAllSources(): void;
+  /**
+   * Checks whether a newer channel catalog was published and, if so, refreshes the
+   * library without flicker. Called periodically while the app is open (src/app/effects.ts).
+   * Returns true when something changed.
+   */
+  refreshCatalogIfChanged(): Promise<boolean>;
   /** Loads tracks of a playlist (cached unless `force`). Returns null on failure. */
   loadPlaylist(key: string, force?: boolean): Promise<Playlist | null>;
 }
 
 const emptySource: SourceState = { status: 'idle', playlists: [], error: null };
 
-export const useLibraryStore = create<LibraryState>()((_set, get) => ({
+export const useLibraryStore = create<LibraryState>()((set, get) => ({
   sources: { catalog: emptySource, account: emptySource, manual: emptySource },
   details: {},
+  catalogVersion: null,
+  catalogGeneratedAt: null,
 
-  async loadSource(kind) {
+  async loadSource(kind, options = {}) {
     const source = SOURCES[kind];
     if (!source.isAvailable()) {
       setSource(kind, { status: 'unavailable', playlists: [], error: null });
       return;
     }
-    setSource(kind, { ...get().sources[kind], status: 'loading', error: null });
+    if (!options.silent) {
+      setSource(kind, { ...get().sources[kind], status: 'loading', error: null });
+    }
     try {
       const playlists = await source.listPlaylists();
       setSource(kind, { status: 'ready', playlists, error: null });
+      if (kind === 'catalog') {
+        const index = await loadCatalogIndex();
+        set({ catalogVersion: catalogVersion(index), catalogGeneratedAt: index.generatedAt });
+      }
     } catch (error) {
+      if (options.silent && get().sources[kind].status === 'ready') return; // keep what we have
       setSource(kind, { status: 'error', playlists: [], error: errorMessage(error) });
     }
   },
 
   loadAllSources() {
     for (const kind of SOURCE_ORDER) void get().loadSource(kind);
+  },
+
+  async refreshCatalogIfChanged() {
+    let version: string;
+    try {
+      version = catalogVersion(await loadCatalogIndex(true));
+    } catch {
+      return false; // offline or site unreachable: try again later
+    }
+    if (version === get().catalogVersion) return false;
+    // Tracks of catalog playlists may have changed: forget them, they reload on demand.
+    set((s) => ({
+      details: Object.fromEntries(
+        Object.entries(s.details).filter(([key]) => !key.startsWith('catalog:')),
+      ),
+    }));
+    await get().loadSource('catalog', { silent: true });
+    return true;
   },
 
   loadPlaylist(key, force = false) {

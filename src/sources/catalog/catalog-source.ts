@@ -33,6 +33,11 @@ export function loadCatalogIndex(force = false): Promise<CatalogIndex> {
   return indexPromise;
 }
 
+/** Identifies a catalog version: its content hash, or its date for older catalogs. */
+export function catalogVersion(index: CatalogIndex): string {
+  return index.contentHash ?? index.generatedAt;
+}
+
 export const catalogSource: PlaylistSource = {
   kind: 'catalog',
 

@@ -22,6 +22,7 @@
  * Only metadata is read (titles, durations, ids). Nothing is downloaded.
  */
 import { execFile } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs, promisify } from 'node:util';
@@ -177,6 +178,7 @@ function summarize(
 }
 
 async function writeCatalog(outDir: string, index: CatalogIndex, files: CatalogPlaylistFile[]) {
+  index.contentHash = computeContentHash(index, files);
   await rm(outDir, { recursive: true, force: true });
   await mkdir(path.join(outDir, 'playlists'), { recursive: true });
   for (const file of files) {
@@ -189,6 +191,20 @@ async function writeCatalog(outDir: string, index: CatalogIndex, files: CatalogP
     await writeFile(path.join(outDir, 'playlists', `${file.id}.json`), JSON.stringify(clean));
   }
   await writeFile(path.join(outDir, 'index.json'), JSON.stringify(index, null, 2));
+}
+
+/**
+ * Fingerprint of everything the app shows (playlists, their order, their tracks), without
+ * the generation time. Two runs over unchanged playlists give the same hash: the deploy
+ * workflow uses it to publish only when something really changed (scripts/catalog-changed.ts).
+ */
+function computeContentHash(index: CatalogIndex, files: CatalogPlaylistFile[]): string {
+  const content = JSON.stringify({
+    channel: index.channel,
+    playlists: index.playlists,
+    tracks: files.map((file) => [file.id, file.title, file.tracks]),
+  });
+  return createHash('sha256').update(content).digest('hex');
 }
 
 // --- fallback: reuse the already published catalog ----------------------------------

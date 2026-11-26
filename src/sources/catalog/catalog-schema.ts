@@ -16,6 +16,12 @@ export interface CatalogIndex {
   schemaVersion: number;
   /** ISO 8601 timestamp of generation. */
   generatedAt: string;
+  /**
+   * SHA-256 of the catalog content (not of the timestamp). Same playlists = same hash.
+   * Used by CI to deploy only on changes and by the app to notice a new catalog.
+   * Optional because catalogs published before v1.1.0 do not have it.
+   */
+  contentHash?: string;
   channel: {
     id: string;
     handle: string;

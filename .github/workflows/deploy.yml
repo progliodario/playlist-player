@@ -1,23 +1,21 @@
-# Builds the web app, regenerates the public playlist catalog of the channel and
-# publishes everything to GitHub Pages (app.config.json -> publicUrl).
+# Publishes the web app and the public playlist catalog to GitHub Pages.
 #
-# Runs on every push to main, once a day (to pick up playlist changes on YouTube),
-# and manually from the Actions tab ("Run workflow").
-# Note: GitHub disables scheduled workflows after 60 days without repository activity;
-# re-enable it from the Actions tab if that happens. See docs/DEPLOY.md.
+# When it runs:
+#  - every push to main            -> always deploys
+#  - "Run workflow" (Actions tab)  -> always deploys
+#  - every 15 minutes (schedule)   -> re-reads the channel playlists and deploys ONLY if
+#                                     something changed (new/removed/renamed playlist,
+#                                     tracks added, removed or reordered)
+# So a change made on YouTube shows up in the app within ~15-20 minutes.
+# Details: docs/sviluppo/deploy-e-rilasci.md
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
   schedule:
-    - cron: '23 3 * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -26,6 +24,11 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write # only for the "keep the schedule alive" step
+    outputs:
+      deploy: ${{ steps.decide.outputs.deploy }}
     steps:
       - uses: actions/checkout@v7
 
@@ -43,18 +46,48 @@ jobs:
         # If YouTube cannot be read from CI, reuse the catalog that is already online.
         run: npm run catalog -- --fallback-to-published
 
+      - name: Compare with the published catalog
+        id: compare
+        run: node scripts/catalog-changed.ts
+
+      - name: Decide whether to deploy
+        id: decide
+        run: |
+          if [ "$GITHUB_EVENT_NAME" != "schedule" ] || [ "${{ steps.compare.outputs.changed }}" = "true" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            echo "Playlists unchanged: nothing to deploy." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Build web app
+        if: steps.decide.outputs.deploy == 'true'
         run: npm run build
 
-      - uses: actions/configure-pages@v6
+      - if: steps.decide.outputs.deploy == 'true'
+        uses: actions/configure-pages@v6
 
-      - uses: actions/upload-pages-artifact@v5
+      - if: steps.decide.outputs.deploy == 'true'
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
+      # GitHub disables scheduled workflows after 60 days without repository activity.
+      # Re-enabling the workflow through the API keeps the schedule running.
+      - name: Keep the schedule alive
+        if: github.event_name == 'schedule'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/$GITHUB_REPOSITORY/actions/workflows/deploy.yml/enable"
+
   deploy:
     needs: build
+    if: needs.build.outputs.deploy == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
