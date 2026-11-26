@@ -4,7 +4,7 @@
  *  2. implement this interface in src/sources/<name>/<name>-source.ts
  *  3. register it in src/sources/registry.ts
  *  4. add its section title to src/i18n/*.ts
- * See docs/DATA-SOURCES.md.
+ * See docs/sviluppo/sorgenti-dati.md.
  */
 import type { Playlist, PlaylistSummary, SourceKind } from '../domain/types.ts';
 

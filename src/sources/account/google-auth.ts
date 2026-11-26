@@ -2,7 +2,7 @@
  * Google sign-in for the "account" source, using the Google Identity Services token
  * client (implicit flow, no backend). Read-only YouTube scope.
  *
- * Setup (one time, by the repository owner): docs/GOOGLE-OAUTH-SETUP.md
+ * Setup (one time, by the repository owner): docs/sviluppo/account-google.md
  */
 import { loadScript } from '../../utils/load-script.ts';
 

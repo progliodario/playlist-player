@@ -46,6 +46,16 @@ export function videoUrl(videoId: string, playlistId?: string): string {
   return `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}${list}`;
 }
 
+/**
+ * Same video in YouTube Music (opens the official app on Android). With a Premium
+ * subscription the official app keeps playing with the screen off.
+ * "LL" (liked videos) has no YouTube Music equivalent, so it is not passed on.
+ */
+export function youtubeMusicUrl(videoId: string, playlistId?: string): string {
+  const list = playlistId && playlistId !== 'LL' ? `&list=${encodeURIComponent(playlistId)}` : '';
+  return `https://music.youtube.com/watch?v=${encodeURIComponent(videoId)}${list}`;
+}
+
 export function playlistUrl(playlistId: string): string {
   return `https://www.youtube.com/playlist?list=${encodeURIComponent(playlistId)}`;
 }

@@ -45,24 +45,34 @@ export function AddPlaylistDialog({ open, onClose }: { open: boolean; onClose: (
       className="dialog"
       onClose={onClose}
       aria-labelledby="add-playlist-title"
+      aria-describedby="add-playlist-description"
     >
-      <form onSubmit={onSubmit} className="dialog__body">
+      <form onSubmit={onSubmit} className="dialog__body" noValidate>
         <h2 id="add-playlist-title">{t.addPlaylist.title}</h2>
-        <p className="muted">{t.addPlaylist.description}</p>
+        <p id="add-playlist-description" className="muted">
+          {t.addPlaylist.description}
+        </p>
+        <label htmlFor="add-playlist-link" className="field-label">
+          {t.addPlaylist.fieldLabel}
+        </label>
         <input
+          id="add-playlist-link"
           className="text-input"
-          type="url"
+          type="text"
           inputMode="url"
-          autoFocus
+          autoComplete="off"
+          spellCheck={false}
           required
           value={value}
           placeholder={t.addPlaylist.placeholder}
-          aria-label={t.addPlaylist.title}
+          aria-describedby={
+            error ? 'add-playlist-description add-playlist-error' : 'add-playlist-description'
+          }
           aria-invalid={error ? true : undefined}
           onChange={(event) => setValue(event.target.value)}
         />
         {error && (
-          <p className="form-error" role="alert">
+          <p id="add-playlist-error" className="form-error" role="alert">
             {error}
           </p>
         )}

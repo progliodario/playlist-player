@@ -8,7 +8,7 @@
  */
 
 /**
- * Where a playlist comes from. See docs/DATA-SOURCES.md.
+ * Where a playlist comes from. See docs/sviluppo/sorgenti-dati.md.
  *  - catalog: public playlists of the configured channel, pre-generated at deploy time.
  *  - account: playlists read live from the signed-in Google account (YouTube Data API).
  *  - manual:  playlists the user added by pasting a link.

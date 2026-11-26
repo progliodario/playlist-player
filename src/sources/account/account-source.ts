@@ -3,7 +3,7 @@
  * YouTube Data API. Includes private/unlisted playlists and "Liked videos".
  *
  * Not available until the user signs in (Settings -> Google account), which in turn
- * requires an OAuth client id (docs/GOOGLE-OAUTH-SETUP.md).
+ * requires an OAuth client id (docs/sviluppo/account-google.md).
  */
 import { classifyPlaylist } from '../../domain/classify.ts';
 import {

@@ -35,6 +35,8 @@ interface SettingsState {
   manualPlaylists: ManualPlaylistEntry[];
   libraryFilter: LibraryFilter;
   librarySort: LibrarySort;
+  /** Single-key keyboard shortcuts (WCAG 2.1.4: users must be able to turn them off). */
+  keyboardShortcuts: boolean;
 
   setLanguage(language: LanguageSetting): void;
   setTheme(theme: ThemeSetting): void;
@@ -45,6 +47,7 @@ interface SettingsState {
   removeManualPlaylist(id: string): void;
   setLibraryFilter(filter: LibraryFilter): void;
   setLibrarySort(sort: LibrarySort): void;
+  setKeyboardShortcuts(enabled: boolean): void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -57,6 +60,7 @@ export const useSettingsStore = create<SettingsState>()(
       manualPlaylists: [],
       libraryFilter: 'all',
       librarySort: 'default',
+      keyboardShortcuts: true,
 
       setLanguage: (language) => set({ language }),
       setTheme: (theme) => set({ theme }),
@@ -80,6 +84,7 @@ export const useSettingsStore = create<SettingsState>()(
         set((state) => ({ manualPlaylists: state.manualPlaylists.filter((p) => p.id !== id) })),
       setLibraryFilter: (libraryFilter) => set({ libraryFilter }),
       setLibrarySort: (librarySort) => set({ librarySort }),
+      setKeyboardShortcuts: (keyboardShortcuts) => set({ keyboardShortcuts }),
     }),
     {
       name: STORAGE_KEYS.settings,

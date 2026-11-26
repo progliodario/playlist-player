@@ -5,7 +5,7 @@
  * UI (<PlayerViewport/>), load/play/pause/seek, and forward player events.
  * It knows nothing about queues or playlists: that is src/player/player-store.ts.
  *
- * YouTube policy reminders (docs/YOUTUBE-POLICIES.md):
+ * YouTube policy reminders (docs/sviluppo/regole-youtube.md):
  *  - the player must stay visible and at least 200x200 px while playing;
  *  - never hide it to play "audio only", never download or cache media.
  */
@@ -23,6 +23,8 @@ class YouTubePlayerEngine {
   private listener: PlayerEngineListener | null = null;
   private volume = 100;
   private muted = false;
+  /** Accessible name of the iframe (WCAG 4.1.2: frames need a title). */
+  private title = 'YouTube';
 
   /** Called once by <PlayerViewport/> with a DOM node React will never re-render. */
   attach(host: HTMLElement): void {
@@ -31,6 +33,12 @@ class YouTubePlayerEngine {
 
   setListener(listener: PlayerEngineListener): void {
     this.listener = listener;
+  }
+
+  /** Sets the iframe title read by screen readers (kept across iframe creation). */
+  setTitle(title: string): void {
+    this.title = title;
+    this.player?.getIframe()?.setAttribute('title', title);
   }
 
   get isCreated(): boolean {
@@ -104,6 +112,7 @@ class YouTubePlayerEngine {
           events: {
             onReady: () => {
               this.player = player;
+              player.getIframe()?.setAttribute('title', this.title);
               player.setVolume(this.volume);
               if (this.muted) player.mute();
               resolve(player);

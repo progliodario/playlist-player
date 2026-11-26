@@ -11,6 +11,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import * as Queue from '../domain/queue.ts';
 import type { Playlist, Track } from '../domain/types.ts';
+import { getStrings } from '../i18n/index.ts';
 import { safeStorage, STORAGE_KEYS } from '../state/storage-keys.ts';
 import { YT_STATE } from './youtube-iframe-api.ts';
 import { playerEngine } from './youtube-player-engine.ts';
@@ -241,6 +242,7 @@ function loadCurrent(autoplay: boolean, startSeconds: number) {
     loadedVideoId: track.videoId,
   });
   usePlayerClock.setState({ currentTime: startSeconds, duration: track.durationSeconds ?? 0 });
+  playerEngine.setTitle(getStrings().player.iframeTitle(track.title || track.videoId));
   playerEngine.load(track.videoId, startSeconds, autoplay).catch(() => {
     usePlayerStore.setState({
       status: 'paused',

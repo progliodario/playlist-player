@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { isValidVideoId, parsePlaylistId, playlistUrl, videoThumbnailUrl } from './youtube-urls.ts';
+import {
+  isValidVideoId,
+  parsePlaylistId,
+  playlistUrl,
+  videoThumbnailUrl,
+  youtubeMusicUrl,
+} from './youtube-urls.ts';
 
 describe('parsePlaylistId', () => {
   it.each([
@@ -37,6 +43,16 @@ describe('url builders', () => {
     expect(videoThumbnailUrl('xkVYAVdXx1A')).toBe(
       'https://i.ytimg.com/vi/xkVYAVdXx1A/mqdefault.jpg',
     );
+  });
+
+  it('builds YouTube Music links', () => {
+    expect(youtubeMusicUrl('xkVYAVdXx1A', 'PLabc')).toBe(
+      'https://music.youtube.com/watch?v=xkVYAVdXx1A&list=PLabc',
+    );
+    expect(youtubeMusicUrl('xkVYAVdXx1A', 'LL')).toBe(
+      'https://music.youtube.com/watch?v=xkVYAVdXx1A',
+    );
+    expect(youtubeMusicUrl('xkVYAVdXx1A')).toBe('https://music.youtube.com/watch?v=xkVYAVdXx1A');
   });
 
   it('validates video ids', () => {

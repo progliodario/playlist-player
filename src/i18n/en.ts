@@ -2,6 +2,7 @@
 import type { Strings } from './it.ts';
 
 const plural = (n: number, one: string, many: string) => (n === 1 ? `1 ${one}` : `${n} ${many}`);
+const thousands = (n: number) => n.toLocaleString('en-GB');
 
 export const en: Strings = {
   locale: 'en-GB',
@@ -11,32 +12,47 @@ export const en: Strings = {
     nowPlaying: 'Now playing',
     settings: 'Settings',
     mainNavigation: 'Main navigation',
+    skipToContent: 'Skip to main content',
   },
 
   library: {
     title: 'Library',
+    greeting: (hour) =>
+      hour < 5
+        ? 'Good night'
+        : hour < 12
+          ? 'Good morning'
+          : hour < 18
+            ? 'Good afternoon'
+            : 'Good evening',
+    heroSubtitle: (playlists, tracks) =>
+      `${plural(playlists, 'playlist', 'playlists')} · ${tracks === 1 ? '1 song' : `${thousands(tracks)} songs`} to enjoy`,
     searchPlaceholder: 'Search playlists…',
+    filterLabel: 'Playlist type',
     filterAll: 'All',
     filterMusic: 'Music',
     filterVideo: 'Videos',
-    sortLabel: 'Sort',
-    sortDefault: 'Default',
+    sortLabel: 'Sort by',
+    sortDefault: 'Channel order',
     sortTitle: 'Name',
     sortSize: 'Most items',
     sortRecent: 'Recently updated',
     sectionAccount: 'Your account',
-    sectionCatalog: (channel: string) => `From channel ${channel}`,
+    sectionCatalog: (channel) => `From channel ${channel}`,
     sectionManual: 'Added by you',
+    resultsCount: (n) => (n === 1 ? '1 playlist found' : `${thousands(n)} playlists found`),
     noResults: 'No playlist matches the filters.',
     catalogError: 'Could not load the channel playlists.',
     accountError: 'Could not load your account playlists.',
-    accountSignedOutHint: 'Sign in with Google to also see private playlists and liked videos.',
-    accountExpiredHint: 'Your Google session expired.',
+    accountSignedOutHint:
+      'Connect your Google account to also see private playlists and the videos you like.',
+    accountExpiredHint: 'Your Google session expired: one click reconnects you.',
     signIn: 'Sign in with Google',
     reconnect: 'Reconnect',
     addPlaylist: 'Add playlist',
     manualEmptyHint: 'You can add any public playlist by pasting its link.',
     likedVideos: 'Liked videos',
+    catalogUpdated: 'Library updated with the latest changes from the channel.',
     itemCount: (n, kind) =>
       kind === 'music' ? plural(n, 'song', 'songs') : plural(n, 'video', 'videos'),
     playlistsCount: (n) => plural(n, 'playlist', 'playlists'),
@@ -46,6 +62,7 @@ export const en: Strings = {
     title: 'Add a playlist',
     description:
       'Paste the link of a YouTube or YouTube Music playlist. It must be public or unlisted.',
+    fieldLabel: 'Playlist link',
     placeholder: 'https://www.youtube.com/playlist?list=…',
     submit: 'Add',
     checking: 'Checking…',
@@ -56,6 +73,7 @@ export const en: Strings = {
 
   playlist: {
     play: 'Play',
+    playNamed: (title) => `Play ${title}`,
     shuffle: 'Shuffle',
     openOnYouTube: 'Open on YouTube',
     searchPlaceholder: 'Search in this playlist…',
@@ -69,6 +87,7 @@ export const en: Strings = {
     notFound: 'Playlist not found.',
     back: 'Back to library',
     remove: 'Remove from library',
+    tracksHeading: 'Tracks',
     noTrackResults: 'No item matches the search.',
     unplayable: 'Unplayable',
     nowPlaying: 'Now playing',
@@ -77,6 +96,7 @@ export const en: Strings = {
   },
 
   player: {
+    region: 'Player',
     nothingPlaying: 'Nothing playing',
     pickSomething: 'Pick a playlist and press Play.',
     play: 'Play',
@@ -90,16 +110,24 @@ export const en: Strings = {
     mute: 'Mute',
     unmute: 'Unmute',
     volume: 'Volume',
+    volumeValue: (n) => `${n}%`,
     seek: 'Position',
+    seekValue: (current, total) => `${current} of ${total}`,
     fullscreen: 'Full screen',
     upNext: 'Up next',
     from: (title) => `From: ${title}`,
     clearQueue: 'Clear queue',
     queueEnd: 'End of queue',
+    moreInQueue: (n) => (n === 1 ? 'and 1 more' : `and ${thousands(n)} more`),
     errorSkipping: 'This video cannot be played here: skipping to the next one.',
     errorGaveUp: 'Too many unplayable videos in a row: playback stopped.',
     openOnYouTube: 'Open on YouTube',
+    openInYouTubeMusic: 'Open in YouTube Music',
     restoredHint: 'Press play to resume where you left off.',
+    nowPlayingAnnouncement: (title, artist) =>
+      artist ? `Now playing: ${title}, by ${artist}` : `Now playing: ${title}`,
+    iframeTitle: (title) => `YouTube video: ${title}`,
+    iframeTitleIdle: 'YouTube player',
   },
 
   settings: {
@@ -109,37 +137,64 @@ export const en: Strings = {
     languageAuto: 'Automatic',
     theme: 'Theme',
     themeAuto: 'Automatic',
-    themeDark: 'Dark',
-    themeLight: 'Light',
+    themeDark: 'Nocturne',
+    themeLight: 'Dawn',
 
     account: 'Google account',
     accountIntro:
-      'Optional. When signed in you also see private and unlisted playlists and liked videos. Read-only access.',
+      'Optional. When signed in you also see private and unlisted playlists and liked videos. Read-only access: the app cannot change anything.',
     signedInAs: (name) => `Signed in as ${name}`,
     signedIn: 'Signed in',
     signIn: 'Sign in with Google',
     signOut: 'Sign out',
     signingIn: 'Signing in…',
-    expired: 'Session expired: please sign in again.',
+    expired: 'Session expired: press Sign in to reconnect.',
     signInError: (message) => `Sign-in failed: ${message}`,
     notConfigured:
-      'Google sign-in is not configured for this app yet. Public channel playlists work anyway.',
-    setupGuide: 'Setup guide',
+      'Google sign-in is not active in this version of the app yet. Public channel playlists work anyway.',
+    setupGuide: 'How to enable it (for the app maintainer)',
     clientIdLabel: 'OAuth Client ID (advanced)',
     clientIdHelp: 'Leave empty to use the project one.',
     save: 'Save',
+
+    listening: 'Ads and listening with the screen off',
+    listeningIntro:
+      'Videos play in the official YouTube player, as YouTube rules require: the app cannot remove ads or play with the player hidden.',
+    listeningPremium:
+      'With YouTube Premium (or YouTube Music Premium) ads disappear here too: just be signed in to YouTube with the same account in this browser.',
+    listeningBackground:
+      'To listen with the screen off use the “Open in YouTube Music” button in the player: the official app, with Premium, keeps playing in the background.',
+    signInYouTube: 'Sign in to YouTube in this browser',
+
+    shortcuts: 'Keyboard shortcuts',
+    shortcutsToggle: 'Enable single-key shortcuts',
+    shortcutsHelp:
+      'They work when you are not typing in a field. Turn them off if you use voice control software or press them by mistake.',
+    shortcutList: [
+      ['Space / K', 'Play or pause'],
+      ['J / L', 'Back / forward 10 seconds'],
+      ['N / P', 'Next / previous track'],
+      ['M', 'Mute on / off'],
+      ['S', 'Shuffle'],
+      ['R', 'Repeat mode'],
+    ],
 
     library: 'Library',
     manualPlaylists: 'Playlists added by you',
     noManualPlaylists: 'No playlist added.',
     remove: 'Remove',
+    removeNamed: (title) => `Remove ${title}`,
     kindOverrides: (n) =>
       n === 1
         ? '1 playlist with a manually chosen type'
         : `${n} playlists with a manually chosen type`,
     resetKinds: 'Reset to automatic type',
-    reloadLibrary: 'Reload library',
-    catalogGenerated: (date) => `Channel catalog updated on ${date}`,
+    catalogGenerated: (date) => `Channel catalog updated: ${date}`,
+    catalogAutoUpdate:
+      'The catalog updates by itself: every 15 minutes it checks whether the channel public playlists changed.',
+    checkNow: 'Check now',
+    checking: 'Checking…',
+    catalogUpToDate: 'The catalog is already up to date.',
 
     install: 'Install the app',
     installButton: 'Install',
@@ -153,6 +208,7 @@ export const en: Strings = {
     about: 'About',
     version: (version, date) => `Version ${version} · built on ${date}`,
     sourceCode: 'Source code on GitHub',
+    accessibility: 'Accessibility statement',
     disclaimer:
       'Unofficial app, not affiliated with YouTube or Google. Videos play in the official YouTube player.',
     clearData: 'Clear local data',
@@ -164,7 +220,10 @@ export const en: Strings = {
     retry: 'Retry',
     cancel: 'Cancel',
     close: 'Close',
+    dismiss: 'Dismiss notification',
+    clearSearch: 'Clear search',
     loading: 'Loading…',
     offline: 'You are offline: some features are unavailable.',
+    opensInNewTab: '(opens in a new tab)',
   },
 };

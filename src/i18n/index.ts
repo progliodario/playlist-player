@@ -34,6 +34,20 @@ export function formatDate(iso: string | null, locale: string): string {
   return date.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+/** "2026-11-26T10:05:00Z" -> "26 nov 2026, 11:05" in the UI language and local time. */
+export function formatDateTime(iso: string | null, locale: string): string {
+  if (!iso) return '';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleString(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 /** 6482 -> "1 h 48 min" (locale independent abbreviations). */
 export function formatLongDuration(seconds: number | null): string {
   if (seconds === null || seconds <= 0) return '';
